@@ -191,9 +191,9 @@ function initThreeJsScrollytelling() {
 
   // Responsive metrics & dimensions calibrated to match the user's golden bounding zone
   let isMobile = window.innerWidth < 1024;
-  let posX_Right = isMobile ? 0 : 1.45;
-  let posX_Left  = isMobile ? 0 : -1.45;
-  let targetBaseY = isMobile ? -0.35 : -0.18;
+  let posX_Right = isMobile ? 0.68 : 1.45;
+  let posX_Left  = isMobile ? -0.68 : -1.45;
+  let targetBaseY = isMobile ? 0.05 : -0.18;
   let jarHalfHeight = 0.827; // will be updated dynamically from scaled geometry
 
   // Choreography configuration table for all 7 sections
@@ -216,9 +216,9 @@ function initThreeJsScrollytelling() {
 
   function measureSectionCenters() {
     isMobile = window.innerWidth < 1024;
-    posX_Right = isMobile ? 0 : 1.45;
-    posX_Left  = isMobile ? 0 : -1.45;
-    targetBaseY = isMobile ? -0.35 : -0.18;
+    posX_Right = isMobile ? 0.68 : 1.45;
+    posX_Left  = isMobile ? -0.68 : -1.45;
+    targetBaseY = isMobile ? 0.05 : -0.18;
 
     const scrollY = window.pageYOffset || document.documentElement.scrollTop;
     sectionCenters = sectionConfigs.map(cfg => {
@@ -287,8 +287,8 @@ function initThreeJsScrollytelling() {
         const fromCfg = sectionConfigs[i];
         const toCfg   = sectionConfigs[i + 1];
 
-        const fromX = isMobile ? 0 : (fromCfg.side === 'right' ? posX_Right : posX_Left);
-        const toX   = isMobile ? 0 : (toCfg.side === 'right' ? posX_Right : posX_Left);
+        const fromX = fromCfg.side === 'right' ? posX_Right : posX_Left;
+        const toX   = toCfg.side === 'right' ? posX_Right : posX_Left;
 
         currentTargetX = fromX + (toX - fromX) * easedP;
         currentTargetRotY = fromCfg.rotY + (toCfg.rotY - fromCfg.rotY) * easedP;
@@ -316,7 +316,7 @@ function initThreeJsScrollytelling() {
       });
 
       // 1. Scale model first so bounding calculations are in world Three.js units
-      const scale = isMobile ? 8.2 : 11.2;
+      const scale = isMobile ? 8.5 : 11.2;
       model.scale.set(scale, scale, scale);
       model.updateMatrixWorld(true);
 

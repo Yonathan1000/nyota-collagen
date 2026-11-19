@@ -151,3 +151,39 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #c84b69;
 }
+
+/* ==========================================================================
+   MOBILE RESPONSIVE CALIBRATION (< 1024px)
+   Alternating edge-peeking 3D jar layout (~50% bleed) with zero desktop impact
+   ========================================================================== */
+@media (max-width: 1023px) {
+  /* Sections with Jar peeking from the RIGHT edge: text stays on left 62% */
+  #section-hero .lg\:col-span-7,
+  #section-formula .lg\:col-span-7,
+  #section-filtro .lg\:col-span-7,
+  #section-oferta .lg\:col-span-7 {
+    width: 62% !important;
+    max-width: 62% !important;
+    margin-right: auto !important;
+    padding-right: 8px !important;
+  }
+
+  /* Sections with Jar peeking from the LEFT edge: text stays on right 62% */
+  #section-beneficios .lg\:col-span-7,
+  #section-respaldo .lg\:col-span-7,
+  #section-ritual .lg\:col-span-7 {
+    width: 62% !important;
+    max-width: 62% !important;
+    margin-left: auto !important;
+    padding-left: 8px !important;
+  }
+
+  /* Responsive typography scaling */
+  h1 { font-size: 1.85rem !important; line-height: 1.15 !important; }
+  h2 { font-size: 1.55rem !important; line-height: 1.2 !important; }
+  
+  /* Hide redundant desktop spacing anchors on mobile */
+  .lg\:col-span-5 {
+    display: none !important;
+  }
+}
