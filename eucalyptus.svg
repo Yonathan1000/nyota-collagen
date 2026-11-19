@@ -1,0 +1,108 @@
+<svg id="eucalyptus-vector" viewBox="0 0 300 450" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+  <defs>
+    <!-- Organic Stem Gradient -->
+    <linearGradient id="eucStemGrad" x1="0%" y1="100%" x2="40%" y2="0%">
+      <stop offset="0%" stop-color="#3D5A47"/>
+      <stop offset="50%" stop-color="#5B7E67"/>
+      <stop offset="100%" stop-color="#8BAE97"/>
+    </linearGradient>
+
+    <!-- Leaf Gradient 1: Soft Botanical Sage with subtle Rose-Blush rim -->
+    <linearGradient id="eucLeafGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#B2D0C0"/>
+      <stop offset="60%" stop-color="#729883"/>
+      <stop offset="95%" stop-color="#C84B69" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#E5B2BD"/>
+    </linearGradient>
+
+    <!-- Leaf Gradient 2: Frosted Mint with Deep Herbal Undertone -->
+    <linearGradient id="eucLeafGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#C1DCD0"/>
+      <stop offset="50%" stop-color="#7E9F8B"/>
+      <stop offset="100%" stop-color="#4F715D"/>
+    </linearGradient>
+
+    <!-- Leaf Gradient 3: Translucent Dew Leaf -->
+    <linearGradient id="eucLeafGrad3" x1="20%" y1="100%" x2="80%" y2="0%">
+      <stop offset="0%" stop-color="#93B7A2"/>
+      <stop offset="70%" stop-color="#678A75"/>
+      <stop offset="100%" stop-color="#F2D0D9"/>
+    </linearGradient>
+
+    <!-- Botanical Soft Ambient Drop Shadow -->
+    <filter id="eucBotanicalGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="2" dy="6" stdDeviation="8" flood-color="#2D4A37" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#eucBotanicalGlow)">
+    <!-- Main Upright Curving Stem (Hugs the far-left corner) -->
+    <path d="M5,450 C18,370 28,290 42,210 C48,150 46,90 38,30" 
+          stroke="url(#eucStemGrad)" stroke-width="4.2" stroke-linecap="round" fill="none"/>
+    
+    <!-- Fine Branchlets -->
+    <path d="M22,350 Q38,340 50,336" stroke="url(#eucStemGrad)" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+    <path d="M36,265 Q56,252 70,248" stroke="url(#eucStemGrad)" stroke-width="2.0" stroke-linecap="round" fill="none"/>
+    <path d="M43,180 Q60,168 72,165" stroke="url(#eucStemGrad)" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+    <path d="M45,115 Q30,105 18,100" stroke="url(#eucStemGrad)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+
+    <!-- BOTANICAL LEAF CLUSTER 1 (Base corner) -->
+    <g transform="translate(10, 420) rotate(-45)" class="leaf-anim">
+      <path d="M0,0 C12,-18 45,-18 55,0 C45,18 12,18 0,0 Z" fill="url(#eucLeafGrad1)" opacity="0.92"/>
+      <path d="M0,0 Q28,-1.5 55,0" stroke="#375542" stroke-width="1.0" opacity="0.45"/>
+    </g>
+
+    <g transform="translate(16, 385) rotate(-28)" class="leaf-anim">
+      <path d="M0,0 C14,-22 52,-22 65,0 C52,22 14,22 0,0 Z" fill="url(#eucLeafGrad2)" opacity="0.90"/>
+      <path d="M0,0 Q32,-2 65,0" stroke="#375542" stroke-width="1.1" opacity="0.45"/>
+    </g>
+
+    <!-- BOTANICAL LEAF CLUSTER 2 (Lower Mid) -->
+    <g transform="translate(26, 355) rotate(32)" class="leaf-anim">
+      <path d="M0,0 C16,-24 58,-24 72,0 C58,24 16,24 0,0 Z" fill="url(#eucLeafGrad3)" opacity="0.95"/>
+      <path d="M0,0 Q36,-2 72,0" stroke="#375542" stroke-width="1.2" opacity="0.45"/>
+    </g>
+
+    <g transform="translate(30, 310) rotate(-42)" class="leaf-anim">
+      <path d="M0,0 C15,-22 55,-22 68,0 C55,22 15,22 0,0 Z" fill="url(#eucLeafGrad1)" opacity="0.92"/>
+      <path d="M0,0 Q34,-2 68,0" stroke="#375542" stroke-width="1.1" opacity="0.45"/>
+    </g>
+
+    <!-- BOTANICAL LEAF CLUSTER 3 (Mid Height) -->
+    <g transform="translate(38, 270) rotate(28)" class="leaf-anim">
+      <path d="M0,0 C15,-22 56,-22 70,0 C56,22 15,22 0,0 Z" fill="url(#eucLeafGrad2)" opacity="0.92"/>
+      <path d="M0,0 Q35,-2 70,0" stroke="#375542" stroke-width="1.1" opacity="0.45"/>
+    </g>
+
+    <g transform="translate(42, 225) rotate(-35)" class="leaf-anim">
+      <path d="M0,0 C14,-20 50,-20 62,0 C50,20 14,20 0,0 Z" fill="url(#eucLeafGrad3)" opacity="0.95"/>
+      <path d="M0,0 Q31,-1.5 62,0" stroke="#375542" stroke-width="1.0" opacity="0.45"/>
+    </g>
+
+    <!-- BOTANICAL LEAF CLUSTER 4 (Upper) -->
+    <g transform="translate(45, 185) rotate(30)" class="leaf-anim">
+      <path d="M0,0 C13,-18 48,-18 60,0 C48,18 13,18 0,0 Z" fill="url(#eucLeafGrad1)" opacity="0.90"/>
+      <path d="M0,0 Q30,-1.5 60,0" stroke="#375542" stroke-width="1.0" opacity="0.45"/>
+    </g>
+
+    <g transform="translate(46, 140) rotate(-26)" class="leaf-anim">
+      <path d="M0,0 C12,-16 44,-16 54,0 C44,16 12,16 0,0 Z" fill="url(#eucLeafGrad2)" opacity="0.92"/>
+      <path d="M0,0 Q27,-1.5 54,0" stroke="#375542" stroke-width="0.9" opacity="0.45"/>
+    </g>
+
+    <!-- BOTANICAL LEAF CLUSTER 5 (Crown / Tender Sprout) -->
+    <g transform="translate(44, 95) rotate(22)" class="leaf-anim">
+      <path d="M0,0 C10,-14 36,-14 45,0 C36,14 10,14 0,0 Z" fill="url(#eucLeafGrad3)" opacity="0.95"/>
+      <path d="M0,0 Q22,-1 45,0" stroke="#375542" stroke-width="0.8" opacity="0.45"/>
+    </g>
+
+    <g transform="translate(40, 58) rotate(-18)" class="leaf-anim">
+      <path d="M0,0 C8,-11 30,-11 38,0 C30,11 8,11 0,0 Z" fill="url(#eucLeafGrad1)" opacity="0.92"/>
+      <path d="M0,0 Q19,-1 38,0" stroke="#375542" stroke-width="0.8" opacity="0.45"/>
+    </g>
+
+    <g transform="translate(38, 30) rotate(8)" class="leaf-anim">
+      <path d="M0,0 C6,-9 22,-9 28,0 C22,9 6,9 0,0 Z" fill="url(#eucLeafGrad2)" opacity="0.95"/>
+    </g>
+  </g>
+</svg>

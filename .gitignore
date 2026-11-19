@@ -1,0 +1,12 @@
+# Build and scratch scripts
+*.py
+*.pyc
+__pycache__/
+*.blend
+*.blend1
+
+# OS files
+Thumbs.db
+.DS_Store
+.vscode/
+.idea/

@@ -1,0 +1,153 @@
+/* NYOTA — Haute Wellness & Performance Stylesheet */
+:root {
+  --color-white: #ffffff;
+  --color-cream: #faf9f8;
+  --color-pearl: #f6f5f3;
+  --color-blush: #fdf5f7;
+  --color-blush-border: #f5dce3;
+  --color-rose: #c84b69;
+  --color-rose-dark: #a83552;
+  --color-rose-light: #e8869f;
+  --color-rose-glow: rgba(200, 75, 105, 0.15);
+  --color-obsidian: #111113;
+  --color-charcoal: #232326;
+  --color-muted: #5e5e66;
+  --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-family: var(--font-sans);
+  background-color: var(--color-white);
+  color: var(--color-obsidian);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  overflow-x: hidden;
+  background-color: var(--color-white);
+  position: relative;
+}
+
+/* Editorial Serif Headlines */
+.font-serif-editorial {
+  font-family: var(--font-serif);
+  letter-spacing: -0.02em;
+}
+
+/* Fullscreen Three.js WebGL Canvas */
+#webgl-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2;
+  pointer-events: none;
+  display: block;
+}
+
+/* Luminous Ambient Glows */
+.ambient-luminous-glow {
+  position: fixed;
+  top: -10%;
+  right: -5%;
+  width: 65vw;
+  height: 65vw;
+  background: radial-gradient(circle, rgba(200, 75, 105, 0.05) 0%, rgba(255, 255, 255, 0) 70%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.ambient-luminous-glow-2 {
+  position: fixed;
+  bottom: -15%;
+  left: -10%;
+  width: 70vw;
+  height: 70vw;
+  background: radial-gradient(circle, rgba(253, 245, 247, 0.8) 0%, rgba(255, 255, 255, 0) 70%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Content Layer */
+.content-layer {
+  position: relative;
+  z-index: 10;
+}
+
+/* Ultra Clean White Glassmorphism Cards */
+.glass-card-luxe {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(245, 220, 227, 0.7);
+  box-shadow: 0 20px 40px -15px rgba(200, 75, 105, 0.06), 0 1px 3px rgba(0, 0, 0, 0.02);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card-luxe:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-rose);
+  box-shadow: 0 25px 50px -15px rgba(200, 75, 105, 0.14);
+}
+
+/* Luxury Primary Button */
+.btn-primary-rose {
+  background: linear-gradient(135deg, #c84b69 0%, #a83552 100%);
+  color: #ffffff;
+  box-shadow: 0 10px 28px -6px rgba(200, 75, 105, 0.45);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-primary-rose:hover {
+  background: linear-gradient(135deg, #d45d79 0%, #b83a58 100%);
+  box-shadow: 0 14px 34px -6px rgba(200, 75, 105, 0.6);
+  transform: translateY(-2px);
+}
+
+/* Pill Badges */
+.badge-wellness {
+  background: var(--color-blush);
+  color: var(--color-rose);
+  border: 1px solid var(--color-blush-border);
+}
+
+/* Active Pricing Option */
+.pricing-card.active-plan {
+  border-color: var(--color-rose);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(253, 245, 247, 0.9) 100%);
+  box-shadow: 0 25px 50px -12px rgba(200, 75, 105, 0.2);
+}
+
+/* Sticky Bottom Buy Bar */
+.sticky-buy-bar {
+  transform: translateY(120%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sticky-buy-bar.visible {
+  transform: translateY(0);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+::-webkit-scrollbar-thumb {
+  background: #e8b8c5;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #c84b69;
+}
