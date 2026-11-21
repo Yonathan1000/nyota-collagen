@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   initThreeJsScrollytelling();
   initPricingSelector();
+  initCartDrawer();
   initFaqAccordion();
   initStickyBar();
   initSmoothScrollLinks();
@@ -520,6 +521,336 @@ function initPricingSelector() {
   }
 
   updateCtaLink();
+}
+
+// 3. CART & CHECKOUT DRAWER ENGINE
+function initCartDrawer() {
+  const drawer = document.getElementById('cart-drawer');
+  const overlay = document.getElementById('cart-overlay');
+  const closeBtn = document.getElementById('close-cart-btn');
+  const openCartBtn = document.getElementById('open-cart-btn');
+  const headerCheckoutBtn = document.getElementById('header-checkout-btn');
+  const heroBuyBtn = document.getElementById('hero-buy-btn');
+  const stickyCartBtn = document.getElementById('sticky-cart-btn');
+  const openIzipayBtn = document.getElementById('btn-open-izipay-checkout');
+  const tierRadios = document.querySelectorAll('input[name="cart_tier"]');
+  const tierOptionCards = document.querySelectorAll('.cart-tier-option');
+  const tierCardButtons = document.querySelectorAll('.btn-select-tier');
+  
+  const qtyMinus = document.getElementById('cart-qty-minus');
+  const qtyPlus = document.getElementById('cart-qty-plus');
+  const qtyDisplay = document.getElementById('cart-qty-display');
+  const headerBadge = document.getElementById('header-cart-badge');
+  
+  const subtotalDisplay = document.getElementById('cart-summary-subtotal');
+  const shippingDisplay = document.getElementById('cart-summary-shipping');
+  const totalDisplay = document.getElementById('cart-summary-total');
+  
+  const btnPayIzipay = document.getElementById('btn-pay-izipay');
+  const btnPayText = document.getElementById('btn-pay-text');
+  const btnPayWhatsapp = document.getElementById('btn-pay-whatsapp');
+  const paymentContainer = document.getElementById('izipay-payment-container');
+  const notifBox = document.getElementById('cart-notification-box');
+
+  const destinationSelect = document.getElementById('cust-destination');
+
+  // Cart State
+  let state = {
+    tier: 'duo', // 'single' | 'duo'
+    quantity: 1,
+    prices: {
+      single: 179,
+      duo: 319
+    },
+    names: {
+      single: '1 Frasco (500 g) — Tratamiento 33 Días',
+      duo: 'Pack Dúo (2 Frascos · 1 kg) — Tratamiento 66 Días'
+    }
+  };
+
+  function openDrawer(preferredTier) {
+    if (!drawer || !overlay) return;
+    if (preferredTier) {
+      setTier(preferredTier);
+    }
+    drawer.classList.add('open');
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDrawer() {
+    if (!drawer || !overlay) return;
+    drawer.classList.remove('open');
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function setTier(tier) {
+    if (!state.prices[tier]) return;
+    state.tier = tier;
+    
+    // Update radio inputs
+    tierRadios.forEach(radio => {
+      radio.checked = radio.value === tier;
+    });
+
+    // Update style on tier option cards
+    tierOptionCards.forEach(card => {
+      if (card.dataset.tier === tier) {
+        card.classList.add('active-tier', 'border-2', 'border-[#C84B69]', 'bg-[#FDF5F7]/40');
+        card.classList.remove('border', 'border-[#F5DCE3]', 'bg-white');
+      } else {
+        card.classList.remove('active-tier', 'border-2', 'border-[#C84B69]', 'bg-[#FDF5F7]/40');
+        card.classList.add('border', 'border-[#F5DCE3]', 'bg-white');
+      }
+    });
+
+    // Update on-page active pricing card if present
+    document.querySelectorAll('.pricing-option-card').forEach(card => {
+      if (card.dataset.tier === tier) {
+        card.classList.add('active-plan');
+      } else {
+        card.classList.remove('active-plan');
+      }
+    });
+
+    updateTotals();
+  }
+
+  function updateTotals() {
+    const unitPrice = state.prices[state.tier];
+    const subtotal = unitPrice * state.quantity;
+    
+    const isDuo = state.tier === 'duo';
+    const destination = destinationSelect ? destinationSelect.value : 'lima';
+    
+    // Pack Duo includes free shipping in Lima. For single, S/. 15 shipping.
+    let shippingCost = 0;
+    let shippingText = 'Gratis (Pack Dúo)';
+
+    if (!isDuo) {
+      shippingCost = destination === 'lima' ? 12 : 20;
+      shippingText = `S/. ${shippingCost.toFixed(2)}`;
+    } else {
+      if (destination === 'provincias') {
+        shippingCost = 15;
+        shippingText = 'S/. 15.00 (Provincia)';
+      } else {
+        shippingCost = 0;
+        shippingText = 'Gratis (Lima Metropolitana)';
+      }
+    }
+
+    const total = subtotal + shippingCost;
+
+    if (qtyDisplay) qtyDisplay.textContent = state.quantity;
+    if (headerBadge) headerBadge.textContent = state.quantity;
+    if (subtotalDisplay) subtotalDisplay.textContent = `S/. ${subtotal.toFixed(2)}`;
+    if (shippingDisplay) {
+      shippingDisplay.textContent = shippingText;
+      shippingDisplay.className = shippingCost === 0 ? 'font-semibold text-emerald-600' : 'font-semibold text-[#111113]';
+    }
+    if (totalDisplay) totalDisplay.textContent = `S/. ${total.toFixed(2)}`;
+
+    // Sync on-page offer price display
+    const onPagePrice = document.getElementById('selected-price-display');
+    if (onPagePrice) {
+      onPagePrice.textContent = `S/. ${unitPrice}`;
+    }
+  }
+
+  // Event Listeners for Open / Close
+  if (openCartBtn) openCartBtn.addEventListener('click', () => openDrawer());
+  if (headerCheckoutBtn) headerCheckoutBtn.addEventListener('click', () => openDrawer());
+  if (heroBuyBtn) heroBuyBtn.addEventListener('click', () => openDrawer('single'));
+  if (stickyCartBtn) stickyCartBtn.addEventListener('click', () => openDrawer());
+  if (openIzipayBtn) openIzipayBtn.addEventListener('click', () => openDrawer());
+  if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+  if (overlay) overlay.addEventListener('click', closeDrawer);
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && drawer && drawer.classList.contains('open')) {
+      closeDrawer();
+    }
+  });
+
+  // Tier Card buttons in offer section
+  tierCardButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const tier = btn.dataset.tier;
+      openDrawer(tier);
+    });
+  });
+
+  // Radios inside drawer
+  tierRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      setTier(radio.value);
+    });
+  });
+
+  tierOptionCards.forEach(card => {
+    card.addEventListener('click', () => {
+      const tier = card.dataset.tier;
+      setTier(tier);
+    });
+  });
+
+  // Quantity controls
+  if (qtyMinus) {
+    qtyMinus.addEventListener('click', () => {
+      if (state.quantity > 1) {
+        state.quantity--;
+        updateTotals();
+      }
+    });
+  }
+
+  if (qtyPlus) {
+    qtyPlus.addEventListener('click', () => {
+      if (state.quantity < 10) {
+        state.quantity++;
+        updateTotals();
+      }
+    });
+  }
+
+  if (destinationSelect) {
+    destinationSelect.addEventListener('change', updateTotals);
+  }
+
+  // Helper to validate and gather customer fields
+  function getCustomerData() {
+    const name = document.getElementById('cust-name')?.value.trim();
+    const phone = document.getElementById('cust-phone')?.value.trim();
+    const dni = document.getElementById('cust-dni')?.value.trim();
+    const email = document.getElementById('cust-email')?.value.trim();
+    const destination = document.getElementById('cust-destination')?.value;
+    const district = document.getElementById('cust-district')?.value.trim();
+    const address = document.getElementById('cust-address')?.value.trim();
+
+    return { name, phone, dni, email, destination, district, address };
+  }
+
+  function validateCustomer(cust) {
+    if (!cust.name) return 'Por favor, ingresa tu Nombre y Apellido.';
+    if (!cust.phone || cust.phone.length < 8) return 'Por favor, ingresa un número de teléfono o WhatsApp válido.';
+    if (!cust.dni || cust.dni.length < 8) return 'Por favor, ingresa tu DNI o RUC para el comprobante.';
+    if (!cust.email || !cust.email.includes('@')) return 'Por favor, ingresa un correo electrónico válido.';
+    if (!cust.district) return 'Por favor, ingresa tu distrito o ciudad de destino.';
+    if (!cust.address) return 'Por favor, ingresa la dirección de entrega.';
+    return null;
+  }
+
+  function showNotification(msg, isError = true) {
+    if (!notifBox) return;
+    notifBox.className = isError 
+      ? 'p-3.5 rounded-xl text-xs bg-rose-50 border border-rose-200 text-rose-800 space-y-1 block'
+      : 'p-3.5 rounded-xl text-xs bg-emerald-50 border border-emerald-200 text-emerald-800 space-y-1 block';
+    notifBox.innerHTML = msg;
+    notifBox.classList.remove('hidden');
+  }
+
+  // Handle WhatsApp Order Button inside drawer
+  if (btnPayWhatsapp) {
+    btnPayWhatsapp.addEventListener('click', () => {
+      const cust = getCustomerData();
+      const unitPrice = state.prices[state.tier];
+      const subtotal = unitPrice * state.quantity;
+      const isDuo = state.tier === 'duo';
+      let shippingCost = isDuo && cust.destination === 'lima' ? 0 : (isDuo ? 15 : (cust.destination === 'lima' ? 12 : 20));
+      const total = subtotal + shippingCost;
+
+      let msg = `*NUEVO PEDIDO NYOTA COLLAGEN ENERGY*\n` +
+        `----------------------------------------\n` +
+        `*Tratamiento:* ${state.names[state.tier]}\n` +
+        `*Cantidad:* ${state.quantity} unidad(es)\n` +
+        `*Subtotal:* S/. ${subtotal.toFixed(2)}\n` +
+        `*Envío:* ${shippingCost === 0 ? 'Gratis' : `S/. ${shippingCost.toFixed(2)}`}\n` +
+        `*Total a Pagar:* S/. ${total.toFixed(2)}\n` +
+        `----------------------------------------\n` +
+        `*DATOS DE ENTREGA*\n` +
+        `*Nombre:* ${cust.name || 'Por coordinar'}\n` +
+        `*WhatsApp:* ${cust.phone || 'Por coordinar'}\n` +
+        `*DNI/RUC:* ${cust.dni || 'Por coordinar'}\n` +
+        `*Destino:* ${cust.destination === 'lima' ? 'Lima Metropolitana' : 'Provincias'}\n` +
+        `*Distrito/Ciudad:* ${cust.district || 'Por coordinar'}\n` +
+        `*Dirección:* ${cust.address || 'Por coordinar'}\n\n` +
+        `Hola, deseo coordinar mi pago y entrega prioritaria por este canal oficial.`;
+
+      const waUrl = `https://wa.me/51999999999?text=${encodeURIComponent(msg)}`;
+      window.open(waUrl, '_blank');
+    });
+  }
+
+  // Handle izipay Online Payment
+  if (btnPayIzipay) {
+    btnPayIzipay.addEventListener('click', async () => {
+      const cust = getCustomerData();
+      const validationError = validateCustomer(cust);
+      if (validationError) {
+        showNotification(`<strong>Faltan datos requeridos:</strong> ${validationError}`, true);
+        return;
+      }
+
+      const unitPrice = state.prices[state.tier];
+      const subtotal = unitPrice * state.quantity;
+      const isDuo = state.tier === 'duo';
+      let shippingCost = isDuo && cust.destination === 'lima' ? 0 : (isDuo ? 15 : (cust.destination === 'lima' ? 12 : 20));
+      const total = subtotal + shippingCost;
+      const orderId = `NYOTA-${Date.now()}`;
+
+      // Loading state
+      btnPayIzipay.disabled = true;
+      btnPayText.textContent = 'Generando transacción segura...';
+      if (notifBox) notifBox.classList.add('hidden');
+
+      try {
+        const response = await fetch('/api/create-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: total,
+            currency: 'PEN',
+            orderId: orderId,
+            customer: cust
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success && data.formToken && window.KR) {
+          // Show izipay embedded form
+          paymentContainer.classList.remove('hidden');
+          btnPayIzipay.classList.add('hidden');
+          window.KR.setFormToken(data.formToken);
+          showNotification('Formulario seguro izipay activado. Ingresa los datos de tu tarjeta o selecciona Yape/Plin.', false);
+        } else {
+          // Gateway returned an error (e.g. pending live production key confirmation)
+          console.warn('izipay response:', data);
+          showNotification(
+            `<strong>Pasarela izipay en validación comercial.</strong><br>` +
+            `Puedes completar tu orden inmediatamente sin contratiempos con nuestro <strong>Concierge vía WhatsApp</strong>. Tus datos ya están listos para ser procesados.`,
+            true
+          );
+          btnPayText.textContent = 'Reintentar Pago con Tarjeta';
+          btnPayIzipay.disabled = false;
+        }
+      } catch (err) {
+        console.error('Checkout error:', err);
+        showNotification(
+          `No se pudo contactar el servidor de pagos. Puedes finalizar tu pedido vía <strong>WhatsApp Concierge</strong> inmediatamente con todos tus datos cargados.`,
+          true
+        );
+        btnPayText.textContent = 'Pagar con Tarjeta / Yape / Plin';
+        btnPayIzipay.disabled = false;
+      }
+    });
+  }
+
+  // Initial Calculation
+  updateTotals();
 }
 
 // 4. FAQ ACCORDION

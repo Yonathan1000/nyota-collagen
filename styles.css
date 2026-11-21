@@ -153,6 +153,51 @@ body {
 }
 
 /* ==========================================================================
+   CART & CHECKOUT DRAWER
+   ========================================================================== */
+#cart-drawer {
+  will-change: transform;
+  z-index: 9999;
+}
+
+#cart-drawer.open {
+  transform: translateX(0) !important;
+}
+
+#cart-overlay {
+  z-index: 9998;
+}
+
+#cart-overlay.open {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+.cart-tier-option.active-tier {
+  border-color: #c84b69 !important;
+  background-color: #fdf5f7 !important;
+}
+
+/* izipay Krypton Custom Styling */
+.kr-embedded {
+  font-family: inherit !important;
+}
+.kr-payment-button {
+  background: linear-gradient(135deg, #c84b69 0%, #a83552 100%) !important;
+  border: none !important;
+  border-radius: 9999px !important;
+  color: white !important;
+  font-weight: 700 !important;
+  font-size: 0.75rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  box-shadow: 0 10px 25px -5px rgba(200, 75, 105, 0.4) !important;
+}
+.kr-payment-button:hover {
+  background: linear-gradient(135deg, #d45d79 0%, #b83a58 100%) !important;
+}
+
+/* ==========================================================================
    MOBILE RESPONSIVE CALIBRATION (< 1024px)
    Alternating edge-peeking 3D jar layout (~50% bleed) with zero desktop impact
    ========================================================================== */

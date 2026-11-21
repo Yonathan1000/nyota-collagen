@@ -26,6 +26,13 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <!-- Lucide Icons Library -->
   <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- izipay Krypton Web Payment Form Engine -->
+  <script 
+    src="https://static.micuentaweb.pe/static/js/krypton-client/v4.0/stable/kr-payment-form.min.js"
+    kr-public-key="80459490:testpublickey_tPhPI1JzzpIHIMGE3svNrl2xnmKWhCqJHiaCYPiqoqlz1">
+  </script>
+  <link rel="stylesheet" href="https://static.micuentaweb.pe/static/js/krypton-client/v4.0/stable/kr-payment-form.min.css">
 </head>
 <body class="bg-white text-[#111113] antialiased relative selection:bg-[#FDF5F7] selection:text-[#C84B69]">
 
@@ -56,11 +63,17 @@
         <a href="#section-oferta" class="hover:text-[#C84B69] transition-colors">Comprar</a>
       </nav>
 
-      <!-- Action Button -->
-      <div class="flex items-center space-x-4">
-        <a href="#section-oferta" class="btn-primary-rose px-5 py-2.5 rounded-full text-xs font-bold tracking-wider uppercase transition-all shadow-sm hover:shadow-md">
+      <!-- Action Button & Cart Trigger -->
+      <div class="flex items-center space-x-3">
+        <button id="open-cart-btn" class="relative p-2.5 rounded-full border border-[#F5DCE3] hover:border-[#C84B69] hover:bg-[#FDF5F7] transition-all flex items-center justify-center text-[#111113] hover:text-[#C84B69] cursor-pointer" aria-label="Abrir carrito de compras">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+          <span id="header-cart-badge" class="absolute -top-1 -right-1 w-5 h-5 bg-[#C84B69] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm">1</span>
+        </button>
+        <button id="header-checkout-btn" class="btn-primary-rose px-5 py-2.5 rounded-full text-xs font-bold tracking-wider uppercase transition-all shadow-sm hover:shadow-md cursor-pointer">
           Iniciar Ritual
-        </a>
+        </button>
       </div>
     </div>
   </header>
@@ -126,9 +139,10 @@
 
           <!-- CTAs -->
           <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 pt-3">
-            <a href="#section-oferta" class="btn-primary-rose px-8 py-4 rounded-full text-center text-xs font-bold tracking-wider uppercase inline-flex items-center justify-center space-x-2">
+            <button id="hero-buy-btn" class="btn-primary-rose px-8 py-4 rounded-full text-center text-xs font-bold tracking-wider uppercase inline-flex items-center justify-center space-x-2 cursor-pointer shadow-lg hover:shadow-xl transition-all">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
               <span>Adquirir Mi Tratamiento — S/. 179</span>
-            </a>
+            </button>
             <a href="#section-formula" class="px-7 py-4 rounded-full text-center text-xs font-bold tracking-wider text-[#111113] border border-[#F5DCE3] hover:border-[#C84B69] hover:bg-[#FDF5F7] transition-all inline-flex items-center justify-center space-x-1.5">
               <span>Explorar la Fórmula</span>
               <svg class="w-3.5 h-3.5 text-[#C84B69]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14m7-7-7 7-7-7"/></svg>
@@ -600,7 +614,7 @@
                   </li>
                 </ul>
               </div>
-              <button type="button" class="w-full py-2.5 rounded-full border border-[#C84B69] text-[#C84B69] text-xs font-bold tracking-wider uppercase hover:bg-[#FDF5F7] transition-all">
+              <button type="button" class="btn-select-tier w-full py-2.5 rounded-full border border-[#C84B69] text-[#C84B69] text-xs font-bold tracking-wider uppercase hover:bg-[#FDF5F7] transition-all cursor-pointer" data-tier="single">
                 Seleccionar 1 Frasco
               </button>
             </div>
@@ -648,24 +662,33 @@
                 </ul>
               </div>
 
-              <button type="button" class="w-full btn-primary-rose py-2.5 rounded-full text-xs font-bold tracking-wider uppercase">
+              <button type="button" class="btn-select-tier w-full btn-primary-rose py-2.5 rounded-full text-xs font-bold tracking-wider uppercase cursor-pointer" data-tier="duo">
                 Seleccionar Pack Dúo
               </button>
             </div>
           </div>
 
           <!-- Checkout Box -->
-          <div class="glass-card-luxe p-5 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-5 border border-[#F5DCE3]">
+          <div class="glass-card-luxe p-6 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6 border border-[#F5DCE3]">
             <div>
               <span class="text-xs text-[#5E5E66] block">Total a Pagar:</span>
-              <div id="selected-price-display" class="text-2xl font-extrabold text-[#C84B69]">S/. 319</div>
-              <p class="text-[11px] text-[#5E5E66] mt-0.5">Transferencias BCP/BBVA, Yape, Plin y Tarjetas.</p>
+              <div id="selected-price-display" class="text-3xl font-extrabold text-[#C84B69]">S/. 319</div>
+              <p class="text-[11px] text-[#5E5E66] mt-1">Acepta Tarjetas Visa/Mastercard, Yape, Plin y Transferencias BCP/BBVA.</p>
             </div>
 
-            <a id="btn-checkout-whatsapp" href="#" target="_blank" class="w-full sm:w-auto btn-primary-rose px-8 py-3.5 rounded-full text-center text-xs font-bold tracking-wider uppercase flex items-center justify-center space-x-2">
-              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-              <span>Pedir por WhatsApp Concierge</span>
-            </a>
+            <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+              <!-- Botón Principal: Pasarela izipay -->
+              <button id="btn-open-izipay-checkout" class="w-full sm:w-auto btn-primary-rose px-7 py-3.5 rounded-full text-center text-xs font-bold tracking-wider uppercase flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-all cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                <span>Pagar con Tarjeta / Yape</span>
+              </button>
+
+              <!-- Botón Secundario: Concierge WhatsApp -->
+              <a id="btn-checkout-whatsapp" href="#" target="_blank" class="w-full sm:w-auto px-6 py-3.5 rounded-full text-center text-xs font-bold tracking-wider uppercase flex items-center justify-center space-x-2 border border-[#C84B69] text-[#C84B69] hover:bg-[#FDF5F7] transition-all">
+                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                <span>WhatsApp</span>
+              </a>
+            </div>
           </div>
         </div>
 
@@ -836,15 +859,210 @@
           <span class="text-xs text-[#5E5E66] block">Desde</span>
           <span class="font-bold text-[#C84B69] text-base">S/. 179</span>
         </div>
-        <a href="#section-oferta" class="btn-primary-rose px-6 py-2.5 rounded-full text-xs font-bold tracking-wider uppercase whitespace-nowrap inline-flex items-center space-x-1.5">
+        <button id="sticky-cart-btn" class="btn-primary-rose px-6 py-2.5 rounded-full text-xs font-bold tracking-wider uppercase whitespace-nowrap inline-flex items-center space-x-1.5 cursor-pointer">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
           <span>Comprar Ahora</span>
-        </a>
+        </button>
       </div>
     </div>
   </div>
 
+  <!-- CART OVERLAY BACKDROP -->
+  <div id="cart-overlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+  <!-- SLIDE-OVER LUXURY CHECKOUT DRAWER -->
+  <div id="cart-drawer" class="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white z-50 shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col justify-between overflow-hidden border-l border-[#F5DCE3]">
+    
+    <!-- Drawer Header -->
+    <div class="p-6 border-b border-[#F5DCE3] flex items-center justify-between bg-[#FDF5F7]/50">
+      <div class="flex items-center space-x-3">
+        <div class="w-9 h-9 rounded-full bg-[#FDF5F7] border border-[#F5DCE3] flex items-center justify-center text-[#C84B69]">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="font-serif-editorial text-xl font-bold text-[#111113]">Tu Ritual NYOTA</h3>
+          <p class="text-[11px] text-[#5E5E66]">Carrito de compras y despacho</p>
+        </div>
+      </div>
+      <button id="close-cart-btn" class="w-8 h-8 rounded-full border border-[#F5DCE3] hover:border-[#C84B69] hover:bg-[#FDF5F7] flex items-center justify-center text-[#5E5E66] hover:text-[#C84B69] transition-all cursor-pointer" aria-label="Cerrar carrito">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- Drawer Body (Scrollable) -->
+    <div class="flex-1 overflow-y-auto p-6 space-y-6">
+
+      <!-- Step 1: Selected Presentation / Tier -->
+      <div class="space-y-3">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-[#5E5E66] block">Presentación seleccionada:</span>
+        
+        <!-- Tier Option 1: 1 Frasco -->
+        <label class="cart-tier-option flex items-start justify-between p-3.5 rounded-2xl border border-[#F5DCE3] cursor-pointer hover:border-[#C84B69] transition-all bg-white" data-tier="single">
+          <div class="flex items-start space-x-3">
+            <input type="radio" name="cart_tier" value="single" class="mt-1 text-[#C84B69] focus:ring-[#C84B69]">
+            <div>
+              <div class="font-bold text-xs text-[#111113]">1 Frasco (500 g)</div>
+              <div class="text-[11px] text-[#5E5E66]">Tratamiento 33 Días · 300mg Hialurónico</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="font-bold text-xs text-[#111113]">S/. 179</div>
+          </div>
+        </label>
+
+        <!-- Tier Option 2: Pack Dúo (Recomendado) -->
+        <label class="cart-tier-option flex items-start justify-between p-3.5 rounded-2xl border-2 border-[#C84B69] cursor-pointer bg-[#FDF5F7]/40 transition-all active-tier" data-tier="duo">
+          <div class="flex items-start space-x-3">
+            <input type="radio" name="cart_tier" value="duo" checked class="mt-1 text-[#C84B69] focus:ring-[#C84B69]">
+            <div>
+              <div class="flex items-center space-x-2">
+                <span class="font-bold text-xs text-[#111113]">Pack Dúo (2 Frascos · 1 kg)</span>
+                <span class="text-[9px] font-bold uppercase bg-[#C84B69] text-white px-2 py-0.5 rounded-full">Recomendado</span>
+              </div>
+              <div class="text-[11px] text-[#C84B69]">66 Días · Ahorras S/. 39 + Envío Gratis</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="font-bold text-xs text-[#C84B69]">S/. 319</div>
+            <div class="text-[10px] line-through text-gray-400">S/. 358</div>
+          </div>
+        </label>
+      </div>
+
+      <!-- Quantity Modifier -->
+      <div class="flex items-center justify-between p-3.5 rounded-2xl bg-gray-50 border border-gray-100">
+        <div>
+          <span class="text-xs font-semibold text-[#111113] block">Unidades del pack:</span>
+          <span class="text-[10px] text-[#5E5E66]">Multiplica tu tratamiento</span>
+        </div>
+        <div class="flex items-center space-x-3">
+          <button id="cart-qty-minus" class="w-7 h-7 rounded-full bg-white border border-gray-200 text-gray-700 hover:border-[#C84B69] hover:text-[#C84B69] flex items-center justify-center font-bold text-sm transition-all cursor-pointer">−</button>
+          <span id="cart-qty-display" class="font-bold text-sm text-[#111113] min-w-[20px] text-center">1</span>
+          <button id="cart-qty-plus" class="w-7 h-7 rounded-full bg-white border border-gray-200 text-gray-700 hover:border-[#C84B69] hover:text-[#C84B69] flex items-center justify-center font-bold text-sm transition-all cursor-pointer">+</button>
+        </div>
+      </div>
+
+      <!-- Customer Delivery Form -->
+      <div class="space-y-4 pt-2 border-t border-[#F5DCE3]">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-[#5E5E66] block">Datos de Envío y Facturación:</span>
+        
+        <div class="space-y-3">
+          <div>
+            <label class="block text-[11px] font-semibold text-[#111113] mb-1">Nombres y Apellidos *</label>
+            <input type="text" id="cust-name" required placeholder="Ej. Camila Morales" class="w-full px-3.5 py-2.5 rounded-xl border border-[#F5DCE3] text-xs text-[#111113] focus:outline-none focus:border-[#C84B69] focus:ring-1 focus:ring-[#C84B69]">
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-semibold text-[#111113] mb-1">Teléfono / WhatsApp *</label>
+              <input type="tel" id="cust-phone" required placeholder="999 999 999" class="w-full px-3.5 py-2.5 rounded-xl border border-[#F5DCE3] text-xs text-[#111113] focus:outline-none focus:border-[#C84B69] focus:ring-1 focus:ring-[#C84B69]">
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-[#111113] mb-1">DNI o RUC *</label>
+              <input type="text" id="cust-dni" required placeholder="8 dígitos" class="w-full px-3.5 py-2.5 rounded-xl border border-[#F5DCE3] text-xs text-[#111113] focus:outline-none focus:border-[#C84B69] focus:ring-1 focus:ring-[#C84B69]">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-semibold text-[#111113] mb-1">Correo Electrónico (para comprobante) *</label>
+            <input type="email" id="cust-email" required placeholder="camila@ejemplo.pe" class="w-full px-3.5 py-2.5 rounded-xl border border-[#F5DCE3] text-xs text-[#111113] focus:outline-none focus:border-[#C84B69] focus:ring-1 focus:ring-[#C84B69]">
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-semibold text-[#111113] mb-1">Destino *</label>
+              <select id="cust-destination" class="w-full px-3.5 py-2.5 rounded-xl border border-[#F5DCE3] text-xs text-[#111113] focus:outline-none focus:border-[#C84B69] bg-white">
+                <option value="lima">Lima Metropolitana</option>
+                <option value="provincias">Provincias del Perú</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-[#111113] mb-1">Distrito / Ciudad *</label>
+              <input type="text" id="cust-district" required placeholder="Ej. San Isidro / Trujillo" class="w-full px-3.5 py-2.5 rounded-xl border border-[#F5DCE3] text-xs text-[#111113] focus:outline-none focus:border-[#C84B69]">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-semibold text-[#111113] mb-1">Dirección de Entrega y Referencia *</label>
+            <input type="text" id="cust-address" required placeholder="Av. Los Sauces 450, Dpto 501" class="w-full px-3.5 py-2.5 rounded-xl border border-[#F5DCE3] text-xs text-[#111113] focus:outline-none focus:border-[#C84B69]">
+          </div>
+        </div>
+      </div>
+
+      <!-- izipay Payment Form Container (Embedded Krypton) -->
+      <div id="izipay-payment-container" class="hidden p-4 rounded-2xl border-2 border-[#C84B69] bg-[#FDF5F7]/40 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-[#111113] flex items-center space-x-1.5">
+            <svg class="w-3.5 h-3.5 text-[#C84B69]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+            <span>Pasarela Segura izipay</span>
+          </span>
+          <span class="text-[10px] text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full font-bold">SSL 256-bit</span>
+        </div>
+        <p class="text-[11px] text-[#5E5E66]">Ingresa los datos de tu tarjeta o selecciona Yape/Plin para completar tu compra de manera inmediata y protegida.</p>
+        
+        <!-- Official Krypton Form Target -->
+        <div class="kr-embedded" id="kr-embedded-box">
+          <div class="kr-pan"></div>
+          <div class="kr-expiry"></div>
+          <div class="kr-security-code"></div>
+          <button class="kr-payment-button w-full btn-primary-rose py-3 rounded-full text-xs font-bold uppercase tracking-wider mt-3">Pagar Ahora</button>
+          <div class="kr-form-error text-xs text-rose-600 mt-2"></div>
+        </div>
+      </div>
+
+      <!-- Notification / Error Box (Hidden by default) -->
+      <div id="cart-notification-box" class="hidden p-3.5 rounded-xl text-xs space-y-1"></div>
+
+    </div>
+
+    <!-- Drawer Footer (Order Summary & Actions) -->
+    <div class="p-6 border-t border-[#F5DCE3] bg-white space-y-4">
+      <!-- Order Summary -->
+      <div class="space-y-1.5 text-xs text-[#5E5E66]">
+        <div class="flex justify-between">
+          <span>Subtotal:</span>
+          <span id="cart-summary-subtotal" class="font-semibold text-[#111113]">S/. 319.00</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Envío:</span>
+          <span id="cart-summary-shipping" class="font-semibold text-emerald-600">Gratis (Pack Dúo)</span>
+        </div>
+        <div class="flex justify-between text-base font-extrabold text-[#111113] pt-2 border-t border-gray-100">
+          <span>Total:</span>
+          <span id="cart-summary-total" class="text-[#C84B69]">S/. 319.00</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="space-y-2.5">
+        <!-- Main Payment Button (izipay) -->
+        <button id="btn-pay-izipay" class="w-full btn-primary-rose py-3.5 rounded-full text-xs font-bold tracking-wider uppercase flex items-center justify-center space-x-2 cursor-pointer shadow-lg hover:shadow-xl transition-all">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+          <span id="btn-pay-text">Pagar con Tarjeta / Yape / Plin</span>
+        </button>
+
+        <!-- WhatsApp Concierge Button -->
+        <button id="btn-pay-whatsapp" class="w-full py-3 rounded-full border border-[#C84B69] text-[#C84B69] hover:bg-[#FDF5F7] text-xs font-bold tracking-wider uppercase flex items-center justify-center space-x-2 transition-all cursor-pointer">
+          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+          <span>Pedir por WhatsApp Concierge</span>
+        </button>
+      </div>
+
+      <!-- Trust Badges -->
+      <div class="flex items-center justify-center space-x-3 text-[10px] text-gray-400 pt-1">
+        <span>Pago 100% Protegido</span>
+        <span>·</span>
+        <span>DIGESA P2999526N</span>
+        <span>·</span>
+        <span>Despacho 24-48h</span>
+      </div>
+    </div>
+
+  </div>
+
   <!-- Main JavaScript App -->
-  <script src="app.js?v=16"></script>
+  <script src="app.js?v=17"></script>
 </body>
 </html>
