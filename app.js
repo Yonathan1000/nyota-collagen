@@ -490,14 +490,14 @@ function initPricingSelector() {
 
   const tiers = {
     single: {
-      name: 'Tratamiento 33 Días (1 Frasco 500g)',
+      name: 'Tratamiento 30 Días (1 Frasco 450g)',
       price: 'S/. 179',
-      message: 'Hola NYOTA, deseo ordenar 1 Frasco de NYOTA COLLAGEN ENERGY (Tratamiento 33 Días por S/. 179). ¿Cuáles son los métodos de pago y tiempo de entrega en Lima?'
+      message: 'Hola NYOTA, deseo ordenar 1 Frasco de NYOTA COLLAGEN ENERGY (Tratamiento 30 Días 450g por S/. 179). ¿Cuáles son los métodos de pago y tiempo de entrega en Lima?'
     },
     duo: {
-      name: 'Tratamiento Dúo 66 Días (2 Frascos + Envío Gratis)',
+      name: 'Tratamiento Dúo 60 Días (2 Frascos · 900g + Envío Gratis)',
       price: 'S/. 319',
-      message: 'Hola NYOTA, deseo ordenar el Pack Dúo (2 Frascos por S/. 319 con Envío Gratis). ¿Cuáles son los métodos de pago disponibles?'
+      message: 'Hola NYOTA, deseo ordenar el Pack Dúo (2 Frascos 450g por S/. 319 con Envío Gratis). ¿Cuáles son los métodos de pago disponibles?'
     }
   };
 
@@ -563,8 +563,8 @@ function initCartDrawer() {
       duo: 319
     },
     names: {
-      single: '1 Frasco (500 g) — Tratamiento 33 Días',
-      duo: 'Pack Dúo (2 Frascos · 1 kg) — Tratamiento 66 Días'
+      single: '1 Frasco (450 g) — Tratamiento 30 Días',
+      duo: 'Pack Dúo (2 Frascos · 900 g) — Tratamiento 60 Días'
     }
   };
 
