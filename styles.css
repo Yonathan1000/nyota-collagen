@@ -127,14 +127,18 @@ body {
   box-shadow: 0 25px 50px -12px rgba(246, 184, 202, 0.28);
 }
 
-/* Sticky Bottom Buy Bar (Velvet Plum Frosted Glass) */
+/* Sticky Bottom Buy Bar (Reveals ONLY on bottom mouse proximity — never blocks footer) */
 .sticky-buy-bar {
   transform: translateY(120%);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.36s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.26s ease;
 }
 
 .sticky-buy-bar.visible {
   transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* Custom Scrollbar */

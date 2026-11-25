@@ -1161,18 +1161,55 @@ function initFaqAccordion() {
   });
 }
 
-// 5. STICKY BUY BAR
+// 5. STICKY BUY BAR (Reveals smoothly only when mouse passes near bottom edge)
 function initStickyBar() {
   const bar = document.getElementById('sticky-buy-bar');
+  const cartDrawer = document.getElementById('cart-drawer');
   if (!bar) return;
 
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 550) {
+  const ENTER_ZONE_PX = 108;
+  const EXIT_ZONE_PX = 136;
+  let isHovered = false;
+
+  const setVisible = (show) => {
+    const drawerOpen = cartDrawer && cartDrawer.classList.contains('open');
+    if (show && !drawerOpen) {
       bar.classList.add('visible');
     } else {
       bar.classList.remove('visible');
     }
+  };
+
+  bar.addEventListener('mouseenter', () => {
+    isHovered = true;
+    setVisible(true);
+  });
+
+  bar.addEventListener('mouseleave', (e) => {
+    isHovered = false;
+    if (e.clientY < window.innerHeight - EXIT_ZONE_PX) {
+      setVisible(false);
+    }
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    const distFromBottom = window.innerHeight - e.clientY;
+    if (distFromBottom <= ENTER_ZONE_PX || isHovered) {
+      setVisible(true);
+    } else if (distFromBottom > EXIT_ZONE_PX) {
+      setVisible(false);
+    }
   }, { passive: true });
+
+  document.addEventListener('mouseleave', () => {
+    isHovered = false;
+    setVisible(false);
+  });
+
+  window.addEventListener('blur', () => {
+    isHovered = false;
+    setVisible(false);
+  });
 }
 
 // 6. SMOOTH SCROLL ANCHORS

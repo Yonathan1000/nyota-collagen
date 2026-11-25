@@ -85,13 +85,12 @@
       float aspect = uResolution.x / max(uResolution.y, 1.0);
       vec2 p = vec2((uv.x - 0.5) * aspect, uv.y - 0.5);
 
-      float t = uTime * 0.24;
-      float vel = clamp(uScrollVel, -1.5, 1.5);
+      float t = uTime * 0.58;
 
-      // Gentle cursor aura and scroll distortion wave
-      vec2 mouseWarp = (uMouse - 0.5) * vec2(0.14, 0.09);
-      float warp = fbm(vec2(p.x * 1.4 - t * 0.45, p.y * 1.8 + uScroll * 0.35 + t * 0.2));
-      vec2 q = p + vec2(warp - 0.5) * (0.14 + abs(vel) * 0.06) + mouseWarp * 0.35;
+      // Gentle cursor aura and smooth continuous organic flow (steady constant slow waves)
+      vec2 mouseWarp = (uMouse - 0.5) * vec2(0.08, 0.05);
+      float flowField = fbm(vec2(p.x * 1.1 - t * 0.32, p.y * 1.3 + t * 0.14 + uScroll * 0.18));
+      vec2 q = p + vec2(flowField - 0.5) * 0.045 + mouseWarp * 0.25;
 
       // 1. Deep Velvet Plum Studio Gradient (richer darker pocket behind left copy)
       vec3 deepWine = vec3(0.12, 0.03, 0.07);
@@ -102,7 +101,7 @@
       vec3 col = mix(deepWine, richPlum, vignette);
 
       // Warm studio backdrop pocket framing the jar area while keeping copy dark & legible
-      float jarGlow = exp(-length((uv - vec2(0.73 + uMouse.x * 0.04, 0.48 - uMouse.y * 0.03)) * vec2(1.35, 1.15)) * 2.4);
+      float jarGlow = exp(-length((uv - vec2(0.73 + uMouse.x * 0.03, 0.48 - uMouse.y * 0.02)) * vec2(1.35, 1.15)) * 2.4);
       float leftGlow = exp(-length((uv - vec2(0.22, 0.52)) * vec2(1.2, 1.3)) * 2.5);
       col += warmRoseStudio * (jarGlow * 0.46 + leftGlow * 0.12);
 
@@ -112,24 +111,28 @@
       col += vec3(0.62, 0.26, 0.40) * floorHorizon * 0.22;
       col += vec3(0.92, 0.68, 0.77) * floorSheen * 0.18;
 
-      // 3. Sweeping Flowing Silk Ribbons (brightest behind jar/floor, softer behind typography)
+      // 3. Sweeping Constant Slow Waves (continuous undulating satin ribbons, bright behind jar/floor)
       float rightBias = mix(0.42, 0.96, smoothstep(-0.15, 0.65, uv.x));
 
-      // Ribbon A: Swooping upward right-side liquid-silk crest behind jar lid
-      float curveA = 0.06 + q.x * 0.40 + sin(q.x * 2.1 - t * 1.1 + uScroll * 0.55) * 0.075 + vel * 0.025;
+      // Ribbon A: Swooping upward right-side liquid-silk wave behind jar lid
+      float waveA = sin(q.x * 2.0 - t * 0.85 + uScroll * 0.18) * 0.075 + cos(q.x * 1.15 - t * 0.52) * 0.028;
+      float curveA = 0.06 + q.x * 0.38 + waveA;
       col = drawSilkRibbon(q, curveA, 4.6, 19.0, 0.88 * rightBias, col);
 
-      // Ribbon B: Deep sculpted secondary drape
-      float curveB = -0.08 + q.x * 0.14 + cos(q.x * 1.85 + t * 0.85 - uScroll * 0.45) * 0.09;
-      col = drawSilkRibbon(q, curveB, 3.8, 15.0, 0.42, col);
+      // Ribbon B: Deep sculpted secondary continuous wave
+      float waveB = cos(q.x * 1.75 + t * 0.68 - uScroll * 0.12) * 0.085 + sin(q.x * 0.95 + t * 0.42) * 0.03;
+      float curveB = -0.08 + q.x * 0.14 + waveB;
+      col = drawSilkRibbon(q, curveB, 3.8, 15.0, 0.44, col);
 
       // Ribbon C: Sweeping foreground horizon silk stream near bottom edge
-      float curveC = -0.34 + sin(q.x * 2.4 + t * 1.25 + uScroll * 0.8) * 0.055 - q.x * 0.06 + vel * 0.035;
-      col = drawSilkRibbon(q, curveC, 5.4, 23.0, 0.88, col);
+      float waveC = sin(q.x * 2.25 - t * 1.05 + uScroll * 0.20) * 0.068 + sin(q.x * 1.2 + t * 0.58) * 0.024;
+      float curveC = -0.32 + waveC - q.x * 0.06;
+      col = drawSilkRibbon(q, curveC, 5.4, 23.0, 0.90, col);
 
-      // Ribbon D: Delicate fine secondary filament accent
-      float curveD = -0.38 + cos(q.x * 3.0 - t * 0.95 + uScroll * 0.5) * 0.04 - q.x * 0.04;
-      col = drawSilkRibbon(q, curveD, 7.2, 32.0, 0.48, col);
+      // Ribbon D: Delicate fine secondary filament wave gliding counter-phase
+      float waveD = cos(q.x * 2.85 + t * 0.82 + uScroll * 0.15) * 0.052;
+      float curveD = -0.36 + waveD - q.x * 0.04;
+      col = drawSilkRibbon(q, curveD, 7.2, 32.0, 0.50, col);
 
       // Soft ambient mouse spotlight reflection
       vec2 mCoord = vec2((uMouse.x - 0.5) * aspect, uMouse.y - 0.5);
