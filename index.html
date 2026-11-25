@@ -15,7 +15,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   
   <!-- Custom Luxury Stylesheet -->
-  <link rel="stylesheet" href="styles.css?v=4">
+  <link rel="stylesheet" href="styles.css?v=6">
 
   <!-- React 18 (Animated Velvet Silk Backdrop) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
@@ -45,11 +45,11 @@
 
   <!-- EDITORIAL LUXURY NAVIGATION HEADER -->
   <header class="sticky top-0 z-40 w-full bg-[#260C16]/75 backdrop-blur-md border-b border-[#F4C4D4]/15 transition-all duration-300">
-    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-2">
       <!-- Wordmark Logo -->
-      <a href="#" class="flex flex-col group">
-        <span class="font-serif-editorial text-2xl md:text-3xl tracking-[0.22em] font-bold text-white group-hover:text-[#F6B8CA] transition-colors">NYOTA</span>
-        <span class="text-[9px] tracking-[0.28em] font-medium text-[#E5CCD5] uppercase">Beauty · Wellness · Performance</span>
+      <a href="#" class="flex flex-col group min-w-0">
+        <span class="font-serif-editorial text-xl sm:text-2xl md:text-3xl tracking-[0.20em] sm:tracking-[0.22em] font-bold text-white group-hover:text-[#F6B8CA] transition-colors leading-none">NYOTA</span>
+        <span class="text-[8px] sm:text-[9px] tracking-[0.12em] sm:tracking-[0.28em] font-medium text-[#E5CCD5] uppercase whitespace-nowrap mt-1">Beauty · Wellness · Performance</span>
       </a>
 
       <!-- Desktop Nav Links -->
@@ -64,15 +64,15 @@
       </nav>
 
       <!-- Action Button & Cart Trigger -->
-      <div class="flex items-center space-x-3">
-        <button id="open-cart-btn" class="relative p-2.5 rounded-full border border-[#F4C4D4]/40 hover:border-[#F6B8CA] hover:bg-white/10 transition-all flex items-center justify-center text-white cursor-pointer" aria-label="Abrir carrito de compras">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+      <div class="flex items-center space-x-2.5 sm:space-x-3 shrink-0">
+        <button id="open-cart-btn" class="relative p-2 sm:p-2.5 rounded-full border border-[#F4C4D4]/40 hover:border-[#F6B8CA] hover:bg-white/10 transition-all flex items-center justify-center text-white cursor-pointer" aria-label="Abrir carrito de compras">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
             <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
           </svg>
-          <span id="header-cart-badge" class="absolute -top-1 -right-1 w-5 h-5 bg-[#E05D7F] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm">1</span>
+          <span id="header-cart-badge" class="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-[#E05D7F] text-white text-[9px] sm:text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm">1</span>
         </button>
-        <button id="header-checkout-btn" class="btn-blush-header px-5 py-2.5 rounded-full text-xs font-bold tracking-wider uppercase cursor-pointer">
-          Iniciar Ritual
+        <button id="header-checkout-btn" class="btn-blush-header px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-[11px] sm:text-xs font-bold tracking-wider uppercase whitespace-nowrap cursor-pointer">
+          <span class="hidden sm:inline">Iniciar </span>Ritual
         </button>
       </div>
     </div>
@@ -850,24 +850,27 @@
   </footer>
 
   <!-- FLOATING STICKY ORDER BAR (Appears on Scroll - Velvet Burgundy Glass matching Reference) -->
-  <div id="sticky-buy-bar" class="sticky-buy-bar fixed bottom-0 left-0 right-0 z-50 bg-[#280E18]/90 backdrop-blur-xl border-t border-[#F4C4D4]/25 px-6 py-3.5 shadow-2xl">
-    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
-      <div class="flex items-center space-x-3">
+  <div id="sticky-buy-bar" class="sticky-buy-bar fixed bottom-0 left-0 right-0 z-50 bg-[#280E18]/92 backdrop-blur-xl border-t border-[#F4C4D4]/25 px-4 sm:px-6 py-2.5 sm:py-3.5 shadow-2xl">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-3 sm:gap-4">
+      <div class="flex items-center space-x-3 min-w-0">
         <div class="w-10 h-10 rounded-full bg-white/10 border border-[#F4C4D4]/30 hidden sm:flex items-center justify-center shrink-0">
           <span class="font-serif-editorial text-sm font-bold text-[#F6B8CA]">N</span>
         </div>
-        <div>
-          <span class="font-serif-editorial font-bold text-sm text-white block">NYOTA COLLAGEN ENERGY</span>
-          <span class="text-[11px] text-[#E5CCD5]">Tratamiento 30 Días · 300mg Hialurónico</span>
+        <div class="min-w-0">
+          <span class="font-serif-editorial font-bold text-xs sm:text-sm text-white block truncate">NYOTA COLLAGEN ENERGY</span>
+          <span class="text-[11px] text-[#E5CCD5] block truncate">
+            <span class="sm:hidden font-semibold text-[#F6B8CA]">S/. 161.10 <span class="text-[10px] text-white/55 font-normal">(-10% 1ª compra)</span></span>
+            <span class="hidden sm:inline">Tratamiento 30 Días · 300mg Hialurónico</span>
+          </span>
         </div>
       </div>
 
-      <div class="flex items-center space-x-4">
+      <div class="flex items-center space-x-4 shrink-0">
         <div class="text-right hidden md:block">
           <span class="text-[10px] text-[#F6B8CA] font-semibold uppercase tracking-wider block">1ª Compra (-10%)</span>
           <span class="font-bold text-white text-base">S/. 161.10 <span class="text-[11px] line-through text-white/45 font-normal">S/. 179</span></span>
         </div>
-        <button id="sticky-cart-btn" class="btn-primary-rose px-6 py-2.5 rounded-full text-xs font-bold tracking-wider uppercase whitespace-nowrap inline-flex items-center space-x-1.5 cursor-pointer">
+        <button id="sticky-cart-btn" class="btn-primary-rose px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-[11px] sm:text-xs font-bold tracking-wider uppercase whitespace-nowrap inline-flex items-center space-x-1.5 cursor-pointer">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
           <span>Comprar Ahora</span>
         </button>
@@ -1118,7 +1121,7 @@
   </div>
 
   <!-- React Velvet Silk Animated Studio Backdrop -->
-  <script src="silk-background.js?v=1"></script>
+  <script src="silk-background.js?v=2"></script>
 
   <!-- Main JavaScript App -->
   <script src="app.js?v=21"></script>

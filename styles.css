@@ -70,11 +70,11 @@ body {
 
 /* Velvet Translucent Frosted Glassmorphism Cards (over Flowing Silk Background) */
 .glass-card-luxe {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.11) 0%, rgba(108, 36, 63, 0.28) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(247, 198, 214, 0.28);
-  box-shadow: 0 22px 48px -15px rgba(10, 2, 6, 0.45), inset 0 1px 0 rgba(255, 234, 242, 0.18);
+  background: linear-gradient(145deg, rgba(44, 14, 26, 0.72) 0%, rgba(28, 8, 17, 0.80) 100%);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border: 1px solid rgba(247, 198, 214, 0.30);
+  box-shadow: 0 22px 48px -15px rgba(10, 2, 6, 0.52), inset 0 1px 0 rgba(255, 234, 242, 0.18);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -123,8 +123,8 @@ body {
 /* Active Pricing Option */
 .pricing-card.active-plan {
   border-color: #f6b8ca;
-  background: linear-gradient(135deg, rgba(246, 184, 202, 0.18) 0%, rgba(124, 38, 70, 0.44) 100%);
-  box-shadow: 0 25px 50px -12px rgba(246, 184, 202, 0.25);
+  background: linear-gradient(145deg, rgba(132, 42, 75, 0.72) 0%, rgba(48, 12, 27, 0.88) 100%);
+  box-shadow: 0 25px 50px -12px rgba(246, 184, 202, 0.28);
 }
 
 /* Sticky Bottom Buy Bar (Velvet Plum Frosted Glass) */
