@@ -1167,8 +1167,8 @@ function initStickyBar() {
   const cartDrawer = document.getElementById('cart-drawer');
   if (!bar) return;
 
-  const ENTER_ZONE_PX = 108;
-  const EXIT_ZONE_PX = 136;
+  const ENTER_ZONE_PX = 20;
+  const EXIT_ZONE_PX = 78;
   let isHovered = false;
 
   const setVisible = (show) => {
@@ -1194,6 +1194,11 @@ function initStickyBar() {
 
   window.addEventListener('mousemove', (e) => {
     const distFromBottom = window.innerHeight - e.clientY;
+    const overFooterLink = e.target && typeof e.target.closest === 'function' && e.target.closest('footer a, footer button');
+    if (!isHovered && overFooterLink) {
+      setVisible(false);
+      return;
+    }
     if (distFromBottom <= ENTER_ZONE_PX || isHovered) {
       setVisible(true);
     } else if (distFromBottom > EXIT_ZONE_PX) {
