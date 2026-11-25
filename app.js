@@ -551,8 +551,11 @@ function initCartDrawer() {
   const btnPayWhatsapp = document.getElementById('btn-pay-whatsapp');
   const btnEditData = document.getElementById('btn-edit-checkout-data');
   const btnNewOrder = document.getElementById('btn-new-order');
+  const presentationSection = document.getElementById('checkout-presentation-section');
+  const qtySection = document.getElementById('checkout-qty-section');
   const customerFormSection = document.getElementById('checkout-customer-form-section');
   const paymentContainer = document.getElementById('izipay-payment-container');
+  const compactSummary = document.getElementById('izipay-compact-summary');
   const smartFormWrapper = document.getElementById('izipay-smartform-wrapper');
   const modeBadge = document.getElementById('izipay-mode-badge');
   const receiptContainer = document.getElementById('izipay-payment-receipt');
@@ -866,6 +869,8 @@ function initCartDrawer() {
     }
     if (paymentContainer) paymentContainer.classList.add('hidden');
     if (receiptContainer) receiptContainer.classList.add('hidden');
+    if (presentationSection) presentationSection.classList.remove('hidden');
+    if (qtySection) qtySection.classList.remove('hidden');
     if (customerFormSection) customerFormSection.classList.remove('hidden');
     if (btnPayIzipay) {
       btnPayIzipay.classList.remove('hidden');
@@ -1064,7 +1069,12 @@ function initCartDrawer() {
           }
         }
 
+        if (presentationSection) presentationSection.classList.add('hidden');
+        if (qtySection) qtySection.classList.add('hidden');
         if (customerFormSection) customerFormSection.classList.add('hidden');
+        if (compactSummary) {
+          compactSummary.textContent = `${state.names[state.tier]} · Cant: ${state.quantity} · Entrega: ${cust.district}`;
+        }
         if (paymentContainer) paymentContainer.classList.remove('hidden');
         if (btnPayIzipay) btnPayIzipay.classList.add('hidden');
 

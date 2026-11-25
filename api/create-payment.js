@@ -61,6 +61,11 @@ module.exports = async (req, res) => {
       currency: currency === 'USD' ? 'USD' : 'PEN',
       orderId: finalOrderId,
       formAction: 'PAYMENT',
+      transactionOptions: {
+        cardOptions: {
+          installmentNumber: 0
+        }
+      },
       customer: {
         email: (customer?.email || 'ventas@nyota.pe').trim(),
         billingDetails: {
