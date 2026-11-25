@@ -549,10 +549,81 @@ function initCartDrawer() {
   const btnPayIzipay = document.getElementById('btn-pay-izipay');
   const btnPayText = document.getElementById('btn-pay-text');
   const btnPayWhatsapp = document.getElementById('btn-pay-whatsapp');
+  const btnEditData = document.getElementById('btn-edit-checkout-data');
+  const btnNewOrder = document.getElementById('btn-new-order');
+  const customerFormSection = document.getElementById('checkout-customer-form-section');
   const paymentContainer = document.getElementById('izipay-payment-container');
+  const smartFormWrapper = document.getElementById('izipay-smartform-wrapper');
+  const modeBadge = document.getElementById('izipay-mode-badge');
+  const receiptContainer = document.getElementById('izipay-payment-receipt');
   const notifBox = document.getElementById('cart-notification-box');
 
   const destinationSelect = document.getElementById('cust-destination');
+
+  // Dynamic Krypton V4.0 SPA script loader state
+  let kryptonLoadedKey = null;
+  let kryptonLoadPromise = null;
+  let kryptonCallbacksBound = false;
+
+  function loadKryptonLibrary(publicKey) {
+    if (!publicKey) {
+      return Promise.reject(new Error('Falta clave pública de izipay'));
+    }
+
+    if (window.KR && kryptonLoadedKey === publicKey) {
+      return Promise.resolve(window.KR);
+    }
+
+    if (kryptonLoadPromise && kryptonLoadedKey === publicKey) {
+      return kryptonLoadPromise;
+    }
+
+    kryptonLoadedKey = publicKey;
+    kryptonLoadPromise = new Promise((resolve, reject) => {
+      const existing = document.getElementById('izipay-krypton-js');
+      if (existing) {
+        if (window.KR) {
+          resolve(window.KR);
+          return;
+        }
+        existing.remove();
+      }
+
+      const script = document.createElement('script');
+      script.id = 'izipay-krypton-js';
+      script.type = 'text/javascript';
+      script.src = 'https://static.micuentaweb.pe/static/js/krypton-client/V4.0/stable/kr-payment-form.min.js';
+      script.setAttribute('kr-public-key', publicKey);
+      script.setAttribute('kr-spa-mode', 'true');
+      script.setAttribute('kr-language', 'es-ES');
+
+      script.onload = () => {
+        if (window.KR) {
+          resolve(window.KR);
+        } else {
+          reject(new Error('El cliente Krypton no se inicializó correctamente.'));
+        }
+      };
+      script.onerror = () => {
+        kryptonLoadPromise = null;
+        kryptonLoadedKey = null;
+        reject(new Error('No se pudo descargar el SDK de izipay.'));
+      };
+      document.head.appendChild(script);
+    });
+
+    return kryptonLoadPromise;
+  }
+
+  // Silently preload gateway config & Krypton library on page boot if configured
+  fetch('/api/config')
+    .then(r => (r.ok ? r.json() : null))
+    .then(cfg => {
+      if (cfg?.configured && cfg.publicKey) {
+        loadKryptonLibrary(cfg.publicKey).catch(() => {});
+      }
+    })
+    .catch(() => {});
 
   // Cart State
   let state = {
@@ -784,6 +855,130 @@ function initCartDrawer() {
     });
   }
 
+  let activeOrderContext = null;
+
+  function resetToCheckoutForm() {
+    if (window.KR && typeof window.KR.removeForms === 'function') {
+      try { window.KR.removeForms(); } catch (_) {}
+    }
+    if (smartFormWrapper) {
+      smartFormWrapper.innerHTML = '<div class="kr-smart-form"></div>';
+    }
+    if (paymentContainer) paymentContainer.classList.add('hidden');
+    if (receiptContainer) receiptContainer.classList.add('hidden');
+    if (customerFormSection) customerFormSection.classList.remove('hidden');
+    if (btnPayIzipay) {
+      btnPayIzipay.classList.remove('hidden');
+      btnPayIzipay.disabled = false;
+    }
+    if (btnPayText) btnPayText.textContent = 'Pagar con Tarjeta / Yape / Plin';
+    if (notifBox) notifBox.classList.add('hidden');
+  }
+
+  if (btnEditData) {
+    btnEditData.addEventListener('click', resetToCheckoutForm);
+  }
+
+  if (btnNewOrder) {
+    btnNewOrder.addEventListener('click', () => {
+      activeOrderContext = null;
+      resetToCheckoutForm();
+    });
+  }
+
+  function bindKryptonHandlers(KR) {
+    if (kryptonCallbacksBound) return;
+    kryptonCallbacksBound = true;
+
+    KR.onError((error) => {
+      console.error('[IZIPAY KR.onError]', error);
+      const errMsg = error?.detailedErrorMessage || error?.errorMessage || 'Verifica los datos ingresados e intenta nuevamente.';
+      showNotification(
+        `<strong>No se pudo procesar el pago:</strong> ${errMsg} <span class="text-[10px] opacity-70">(${error?.errorCode || 'IZIPAY'})</span>`,
+        true
+      );
+    });
+
+    KR.onSubmit(async (paymentData) => {
+      try {
+        showNotification('Verificando firma criptográfica de pago...', false);
+
+        const verifyRes = await fetch('/api/verify-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            'kr-answer': paymentData.rawClientAnswer,
+            'kr-hash': paymentData.hash,
+            'kr-hash-key': paymentData.hashKey || 'sha256_hmac'
+          })
+        });
+
+        const verified = await verifyRes.json();
+
+        if (!verified.valid) {
+          showNotification(
+            `<strong>No pudimos validar la firma del comprobante.</strong> Por seguridad, verifica con soporte o WhatsApp Concierge.`,
+            true
+          );
+          return false;
+        }
+
+        const status = verified.orderStatus || paymentData.clientAnswer?.orderStatus || 'UNKNOWN';
+        if (status === 'PAID' || status === 'RUNNING') {
+          if (paymentContainer) paymentContainer.classList.add('hidden');
+          if (notifBox) notifBox.classList.add('hidden');
+
+          const rOrderId = document.getElementById('receipt-order-id');
+          const rStatus = document.getElementById('receipt-status');
+          const rAmount = document.getElementById('receipt-amount');
+          const rTxId = document.getElementById('receipt-tx-id');
+          const rWaLink = document.getElementById('receipt-whatsapp-link');
+
+          const finalOrder = verified.orderId || activeOrderContext?.orderId || 'NYOTA';
+          const finalAmount = verified.amount ? `${verified.currency || 'PEN'} ${verified.amount.toFixed(2)}` : `S/. ${(activeOrderContext?.total || 0).toFixed(2)}`;
+          const finalTx = verified.transactionUuid || 'Verificado';
+
+          if (rOrderId) rOrderId.textContent = finalOrder;
+          if (rStatus) rStatus.textContent = status;
+          if (rAmount) rAmount.textContent = finalAmount;
+          if (rTxId) rTxId.textContent = finalTx;
+
+          if (rWaLink) {
+            const c = activeOrderContext?.customer || {};
+            const waText =
+              `*PEDIDO PAGADO POR IZIPAY - NYOTA*\n` +
+              `Orden: ${finalOrder}\n` +
+              `Estado: ${status}\n` +
+              `Monto: ${finalAmount}\n` +
+              `ID Transacción: ${finalTx}\n` +
+              `Cliente: ${c.name || ''}\n` +
+              `Teléfono: ${c.phone || ''}\n` +
+              `Distrito: ${c.district || ''}\n` +
+              `Dirección: ${c.address || ''}\n` +
+              `¡Hola! Acabo de completar mi pago en línea, deseo coordinar mi entrega.`;
+            rWaLink.href = `https://wa.me/51999999999?text=${encodeURIComponent(waText)}`;
+          }
+
+          if (receiptContainer) receiptContainer.classList.remove('hidden');
+        } else {
+          showNotification(
+            `<strong>Estado del pago: ${status}.</strong> No se realizó el cobro. Puedes reintentar con otra tarjeta, Yape o usar WhatsApp Concierge.`,
+            true
+          );
+        }
+      } catch (err) {
+        console.error('[IZIPAY onSubmit error]', err);
+        showNotification(
+          `Hubo un error al confirmar la respuesta de pago. Revisa tu conexión o contáctanos por WhatsApp.`,
+          true
+        );
+      }
+
+      // Return false to keep full SPA experience inside the drawer
+      return false;
+    });
+  }
+
   // Handle izipay Online Payment
   if (btnPayIzipay) {
     btnPayIzipay.addEventListener('click', async () => {
@@ -801,6 +996,8 @@ function initCartDrawer() {
       const total = subtotal + shippingCost;
       const orderId = `NYOTA-${Date.now()}`;
 
+      activeOrderContext = { orderId, total, customer: cust, tier: state.tier, quantity: state.quantity };
+
       // Loading state
       btnPayIzipay.disabled = true;
       btnPayText.textContent = 'Generando transacción segura...';
@@ -814,33 +1011,78 @@ function initCartDrawer() {
             amount: total,
             currency: 'PEN',
             orderId: orderId,
-            customer: cust
+            customer: cust,
+            metadata: {
+              tier: state.tier,
+              quantity: String(state.quantity),
+              destination: cust.destination || 'lima'
+            }
           })
         });
 
         const data = await response.json();
 
-        if (data.success && data.formToken && window.KR) {
-          // Show izipay embedded form
-          paymentContainer.classList.remove('hidden');
-          btnPayIzipay.classList.add('hidden');
-          window.KR.setFormToken(data.formToken);
-          showNotification('Formulario seguro izipay activado. Ingresa los datos de tu tarjeta o selecciona Yape/Plin.', false);
-        } else {
-          // Gateway returned an error (e.g. pending live production key confirmation)
-          console.warn('izipay response:', data);
+        if (!data.success || !data.formToken || !data.publicKey) {
+          console.warn('[IZIPAY create-payment failed]', data);
+          const refCode = data.errorCode || 'IZIPAY_ERR';
+          const detailHint =
+            refCode === 'MISSING_CONFIG'
+              ? 'Faltan variables de entorno de IZIPAY en Vercel.'
+              : refCode === 'INT_905'
+                ? 'Credenciales IZIPAY pendientes o inválidas en Vercel.'
+                : (data.error || 'Pasarela en validación.');
+
           showNotification(
-            `<strong>Pasarela izipay en validación comercial.</strong><br>` +
-            `Puedes completar tu orden inmediatamente sin contratiempos con nuestro <strong>Concierge vía WhatsApp</strong>. Tus datos ya están listos para ser procesados.`,
+            `<strong>No se pudo iniciar la pasarela en línea (${detailHint}).</strong><br>` +
+            `Puedes finalizar tu compra inmediatamente vía <strong>WhatsApp Concierge</strong> sin contratiempos. ` +
+            `<span class="block text-[10px] opacity-70 mt-1">[Ref: ${refCode} · Modo: ${data.mode || 'N/A'}]</span>`,
             true
           );
           btnPayText.textContent = 'Reintentar Pago con Tarjeta';
           btnPayIzipay.disabled = false;
+          return;
+        }
+
+        // Load official Krypton V4.0 library matched to the active publicKey (TEST or PRODUCTION)
+        const KR = await loadKryptonLibrary(data.publicKey);
+        bindKryptonHandlers(KR);
+
+        // Clean any prior rendered instance before rendering new formToken
+        if (typeof KR.removeForms === 'function') {
+          try { KR.removeForms(); } catch (_) {}
+        }
+        if (smartFormWrapper) {
+          smartFormWrapper.innerHTML = '<div class="kr-smart-form"></div>';
+        }
+
+        if (modeBadge) {
+          if (data.mode === 'TEST') {
+            modeBadge.classList.remove('hidden');
+            modeBadge.textContent = 'MODO PRUEBAS';
+          } else {
+            modeBadge.classList.add('hidden');
+          }
+        }
+
+        if (customerFormSection) customerFormSection.classList.add('hidden');
+        if (paymentContainer) paymentContainer.classList.remove('hidden');
+        if (btnPayIzipay) btnPayIzipay.classList.add('hidden');
+
+        await KR.setFormConfig({
+          formToken: data.formToken,
+          publicKey: data.publicKey,
+          'kr-language': 'es-ES'
+        });
+
+        await KR.renderElements('#izipay-smartform-wrapper .kr-smart-form');
+
+        if (paymentContainer) {
+          paymentContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
       } catch (err) {
         console.error('Checkout error:', err);
         showNotification(
-          `No se pudo contactar el servidor de pagos. Puedes finalizar tu pedido vía <strong>WhatsApp Concierge</strong> inmediatamente con todos tus datos cargados.`,
+          `No se pudo inicializar el formulario de pagos en este momento. Puedes finalizar tu pedido vía <strong>WhatsApp Concierge</strong> inmediatamente.`,
           true
         );
         btnPayText.textContent = 'Pagar con Tarjeta / Yape / Plin';

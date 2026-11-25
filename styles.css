@@ -179,20 +179,31 @@ body {
 }
 
 /* izipay Krypton Custom Styling */
-.kr-embedded {
-  font-family: inherit !important;
+#izipay-smartform-wrapper {
+  width: 100%;
+  min-height: 150px;
 }
+.kr-smart-form,
+.kr-embedded {
+  font-family: var(--font-sans) !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  background: transparent !important;
+}
+.kr-smart-form .kr-smart-button-wrapper,
+.kr-smart-form .kr-payment-button,
 .kr-payment-button {
   background: linear-gradient(135deg, #c84b69 0%, #a83552 100%) !important;
   border: none !important;
   border-radius: 9999px !important;
   color: white !important;
   font-weight: 700 !important;
-  font-size: 0.75rem !important;
+  font-size: 0.78rem !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
   box-shadow: 0 10px 25px -5px rgba(200, 75, 105, 0.4) !important;
 }
+.kr-smart-form .kr-payment-button:hover,
 .kr-payment-button:hover {
   background: linear-gradient(135deg, #d45d79 0%, #b83a58 100%) !important;
 }

@@ -15,7 +15,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   
   <!-- Custom Luxury Stylesheet -->
-  <link rel="stylesheet" href="styles.css?v=2">
+  <link rel="stylesheet" href="styles.css?v=3">
 
   <!-- Three.js + GLTFLoader for 60FPS Fullscreen 3D Background Engine -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -27,12 +27,9 @@
   <!-- Lucide Icons Library -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <!-- izipay Krypton Web Payment Form Engine -->
-  <script 
-    src="https://static.micuentaweb.pe/static/js/krypton-client/v4.0/stable/kr-payment-form.min.js"
-    kr-public-key="80459490:testpublickey_tPhPI1JzzpIHIMGE3svNrl2xnmKWhCqJHiaCYPiqoqlz1">
-  </script>
-  <link rel="stylesheet" href="https://static.micuentaweb.pe/static/js/krypton-client/v4.0/stable/kr-payment-form.min.css">
+  <!-- izipay Krypton Neon Theme Assets (V4.0 uppercase path; main kr-payment-form.min.js loaded dynamically with live publicKey in SPA mode) -->
+  <link rel="stylesheet" href="https://static.micuentaweb.pe/static/js/krypton-client/V4.0/ext/neon-reset.min.css">
+  <script src="https://static.micuentaweb.pe/static/js/krypton-client/V4.0/ext/neon.js"></script>
 </head>
 <body class="bg-white text-[#111113] antialiased relative selection:bg-[#FDF5F7] selection:text-[#C84B69]">
 
@@ -945,7 +942,7 @@
       </div>
 
       <!-- Customer Delivery Form -->
-      <div class="space-y-4 pt-2 border-t border-[#F5DCE3]">
+      <div id="checkout-customer-form-section" class="space-y-4 pt-2 border-t border-[#F5DCE3]">
         <span class="text-[11px] font-bold uppercase tracking-wider text-[#5E5E66] block">Datos de Envío y Facturación:</span>
         
         <div class="space-y-3">
@@ -991,24 +988,52 @@
         </div>
       </div>
 
-      <!-- izipay Payment Form Container (Embedded Krypton) -->
-      <div id="izipay-payment-container" class="hidden p-4 rounded-2xl border-2 border-[#C84B69] bg-[#FDF5F7]/40 space-y-3">
-        <div class="flex items-center justify-between">
+      <!-- izipay Payment Form Container (SmartForm Neon SPA) -->
+      <div id="izipay-payment-container" class="hidden p-4 rounded-2xl border-2 border-[#C84B69] bg-white space-y-3 shadow-sm">
+        <div class="flex items-center justify-between gap-2">
           <span class="text-xs font-bold text-[#111113] flex items-center space-x-1.5">
             <svg class="w-3.5 h-3.5 text-[#C84B69]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
             <span>Pasarela Segura izipay</span>
           </span>
-          <span class="text-[10px] text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full font-bold">SSL 256-bit</span>
+          <div class="flex items-center space-x-1.5">
+            <span id="izipay-mode-badge" class="hidden text-[9px] text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full font-bold uppercase">TEST</span>
+            <span class="text-[10px] text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full font-bold">SSL 256-bit</span>
+          </div>
         </div>
-        <p class="text-[11px] text-[#5E5E66]">Ingresa los datos de tu tarjeta o selecciona Yape/Plin para completar tu compra de manera inmediata y protegida.</p>
+        <p class="text-[11px] text-[#5E5E66]">Completa tu pago de forma inmediata con tarjetas Visa, Mastercard, Amex, Diners o billeteras habilitadas.</p>
         
-        <!-- Official Krypton Form Target -->
-        <div class="kr-embedded" id="kr-embedded-box">
-          <div class="kr-pan"></div>
-          <div class="kr-expiry"></div>
-          <div class="kr-security-code"></div>
-          <button class="kr-payment-button w-full btn-primary-rose py-3 rounded-full text-xs font-bold uppercase tracking-wider mt-3">Pagar Ahora</button>
-          <div class="kr-form-error text-xs text-rose-600 mt-2"></div>
+        <!-- Official Krypton SmartForm Mount Target -->
+        <div id="izipay-smartform-wrapper" class="kr-smart-form-wrapper">
+          <div class="kr-smart-form"></div>
+        </div>
+
+        <button type="button" id="btn-edit-checkout-data" class="w-full text-[11px] font-semibold text-[#5E5E66] hover:text-[#C84B69] underline pt-1 cursor-pointer">
+          Modificar presentación o datos de envío
+        </button>
+      </div>
+
+      <!-- Payment Confirmed Receipt Screen -->
+      <div id="izipay-payment-receipt" class="hidden p-5 rounded-2xl border-2 border-emerald-500/60 bg-emerald-50/50 space-y-4 text-center">
+        <div class="w-12 h-12 mx-auto rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="space-y-1">
+          <h4 class="font-serif-editorial text-2xl font-bold text-[#111113]">¡Pago Confirmado!</h4>
+          <p class="text-xs text-[#5E5E66]">Tu pedido NYOTA ha sido validado de forma segura.</p>
+        </div>
+        <div class="bg-white rounded-xl p-3.5 border border-emerald-200 text-left text-xs space-y-1.5">
+          <div class="flex justify-between"><span class="text-[#5E5E66]">Nro. Orden:</span><strong id="receipt-order-id" class="text-[#111113]">—</strong></div>
+          <div class="flex justify-between"><span class="text-[#5E5E66]">Estado:</span><strong id="receipt-status" class="text-emerald-700">PAID</strong></div>
+          <div class="flex justify-between"><span class="text-[#5E5E66]">Monto Pagado:</span><strong id="receipt-amount" class="text-[#C84B69]">—</strong></div>
+          <div class="flex justify-between gap-2"><span class="text-[#5E5E66] shrink-0">ID Transacción:</span><strong id="receipt-tx-id" class="text-[#111113] truncate text-[10px]">—</strong></div>
+        </div>
+        <div class="space-y-2">
+          <a id="receipt-whatsapp-link" href="#" target="_blank" class="w-full btn-primary-rose py-3 rounded-full text-xs font-bold uppercase tracking-wider flex items-center justify-center space-x-2">
+            <span>Coordinar Horario por WhatsApp</span>
+          </a>
+          <button type="button" id="btn-new-order" class="w-full py-2.5 rounded-full border border-gray-300 text-xs font-semibold text-[#5E5E66] hover:text-[#111113] cursor-pointer">
+            Realizar otro pedido
+          </button>
         </div>
       </div>
 
@@ -1063,6 +1088,6 @@
   </div>
 
   <!-- Main JavaScript App -->
-  <script src="app.js?v=17"></script>
+  <script src="app.js?v=18"></script>
 </body>
 </html>
