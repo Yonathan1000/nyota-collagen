@@ -1210,6 +1210,21 @@ function initStickyBar() {
     isHovered = false;
     setVisible(false);
   });
+
+  const stickyCartBtn = document.getElementById('sticky-cart-btn');
+  if (stickyCartBtn) {
+    stickyCartBtn.addEventListener('click', () => {
+      isHovered = false;
+      bar.classList.remove('visible');
+    });
+  }
+
+  window.addEventListener('touchstart', (e) => {
+    if (!bar.contains(e.target)) {
+      isHovered = false;
+      bar.classList.remove('visible');
+    }
+  }, { passive: true });
 }
 
 // 6. SMOOTH SCROLL ANCHORS
