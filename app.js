@@ -551,6 +551,8 @@ function initCartDrawer() {
   const btnPayWhatsapp = document.getElementById('btn-pay-whatsapp');
   const btnEditData = document.getElementById('btn-edit-checkout-data');
   const btnNewOrder = document.getElementById('btn-new-order');
+  const drawerBody = document.getElementById('cart-drawer-body');
+  const drawerFooter = document.getElementById('cart-drawer-footer');
   const presentationSection = document.getElementById('checkout-presentation-section');
   const qtySection = document.getElementById('checkout-qty-section');
   const customerFormSection = document.getElementById('checkout-customer-form-section');
@@ -872,6 +874,8 @@ function initCartDrawer() {
     if (presentationSection) presentationSection.classList.remove('hidden');
     if (qtySection) qtySection.classList.remove('hidden');
     if (customerFormSection) customerFormSection.classList.remove('hidden');
+    if (drawerFooter) drawerFooter.classList.remove('hidden');
+    if (drawerBody) drawerBody.scrollTop = 0;
     if (btnPayIzipay) {
       btnPayIzipay.classList.remove('hidden');
       btnPayIzipay.disabled = false;
@@ -1072,6 +1076,7 @@ function initCartDrawer() {
         if (presentationSection) presentationSection.classList.add('hidden');
         if (qtySection) qtySection.classList.add('hidden');
         if (customerFormSection) customerFormSection.classList.add('hidden');
+        if (drawerFooter) drawerFooter.classList.add('hidden');
         if (compactSummary) {
           compactSummary.textContent = `${state.names[state.tier]} · Cant: ${state.quantity} · Entrega: ${cust.district}`;
         }
@@ -1086,8 +1091,8 @@ function initCartDrawer() {
 
         await KR.renderElements('#izipay-smartform-wrapper .kr-smart-form');
 
-        if (paymentContainer) {
-          paymentContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        if (drawerBody) {
+          drawerBody.scrollTop = 0;
         }
       } catch (err) {
         console.error('Checkout error:', err);
