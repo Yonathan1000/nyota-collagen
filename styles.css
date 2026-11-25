@@ -1,17 +1,18 @@
-/* NYOTA — Haute Wellness & Performance Stylesheet */
+/* NYOTA — Velvet Burgundy Silk & Haute Wellness Stylesheet */
 :root {
   --color-white: #ffffff;
-  --color-cream: #faf9f8;
-  --color-pearl: #f6f5f3;
+  --color-plum-deep: #220913;
+  --color-plum-mid: #47192b;
+  --color-plum-glow: #782e4a;
   --color-blush: #fdf5f7;
-  --color-blush-border: #f5dce3;
+  --color-blush-pastel: #f6c2d2;
+  --color-blush-border: rgba(247, 198, 214, 0.32);
   --color-rose: #c84b69;
+  --color-rose-bright: #e05d7f;
   --color-rose-dark: #a83552;
-  --color-rose-light: #e8869f;
-  --color-rose-glow: rgba(200, 75, 105, 0.15);
   --color-obsidian: #111113;
-  --color-charcoal: #232326;
-  --color-muted: #5e5e66;
+  --color-ivory: #fff8fa;
+  --color-muted-blush: #e5ccd5;
   --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 }
@@ -25,14 +26,14 @@
 html {
   scroll-behavior: smooth;
   font-family: var(--font-sans);
-  background-color: var(--color-white);
-  color: var(--color-obsidian);
+  background-color: var(--color-plum-deep);
+  color: var(--color-ivory);
   -webkit-font-smoothing: antialiased;
 }
 
 body {
   overflow-x: hidden;
-  background-color: var(--color-white);
+  background: radial-gradient(circle at 70% 42%, #722b46 0%, #441829 52%, #200912 100%);
   position: relative;
 }
 
@@ -42,7 +43,14 @@ body {
   letter-spacing: -0.02em;
 }
 
-/* Fullscreen Three.js WebGL Canvas */
+/* React Silk Shader Root + Three.js WebGL Foreground Jar Canvas */
+#react-silk-bg-root {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
 #webgl-canvas {
   position: fixed;
   top: 0;
@@ -54,80 +62,72 @@ body {
   display: block;
 }
 
-/* Luminous Ambient Glows */
-.ambient-luminous-glow {
-  position: fixed;
-  top: -10%;
-  right: -5%;
-  width: 65vw;
-  height: 65vw;
-  background: radial-gradient(circle, rgba(200, 75, 105, 0.05) 0%, rgba(255, 255, 255, 0) 70%);
-  z-index: 1;
-  pointer-events: none;
-}
-
-.ambient-luminous-glow-2 {
-  position: fixed;
-  bottom: -15%;
-  left: -10%;
-  width: 70vw;
-  height: 70vw;
-  background: radial-gradient(circle, rgba(253, 245, 247, 0.8) 0%, rgba(255, 255, 255, 0) 70%);
-  z-index: 1;
-  pointer-events: none;
-}
-
 /* Content Layer */
 .content-layer {
   position: relative;
   z-index: 10;
 }
 
-/* Ultra Clean White Glassmorphism Cards */
+/* Velvet Translucent Frosted Glassmorphism Cards (over Flowing Silk Background) */
 .glass-card-luxe {
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(245, 220, 227, 0.7);
-  box-shadow: 0 20px 40px -15px rgba(200, 75, 105, 0.06), 0 1px 3px rgba(0, 0, 0, 0.02);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.11) 0%, rgba(108, 36, 63, 0.28) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(247, 198, 214, 0.28);
+  box-shadow: 0 22px 48px -15px rgba(10, 2, 6, 0.45), inset 0 1px 0 rgba(255, 234, 242, 0.18);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-card-luxe:hover {
   transform: translateY(-4px);
-  border-color: var(--color-rose);
-  box-shadow: 0 25px 50px -15px rgba(200, 75, 105, 0.14);
+  border-color: rgba(247, 198, 214, 0.6);
+  box-shadow: 0 28px 54px -15px rgba(240, 146, 178, 0.22), inset 0 1px 0 rgba(255, 234, 242, 0.28);
 }
 
-/* Luxury Primary Button */
+/* Luxury Primary Button (Glossy Berry Rose) */
 .btn-primary-rose {
-  background: linear-gradient(135deg, #c84b69 0%, #a83552 100%);
+  background: linear-gradient(135deg, #e05d7f 0%, #b73558 100%);
   color: #ffffff;
-  box-shadow: 0 10px 28px -6px rgba(200, 75, 105, 0.45);
+  box-shadow: 0 12px 30px -6px rgba(224, 93, 127, 0.55);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-primary-rose:hover {
-  background: linear-gradient(135deg, #d45d79 0%, #b83a58 100%);
-  box-shadow: 0 14px 34px -6px rgba(200, 75, 105, 0.6);
+  background: linear-gradient(135deg, #ea6f8f 0%, #c63e63 100%);
+  box-shadow: 0 16px 38px -6px rgba(234, 111, 143, 0.7);
   transform: translateY(-2px);
 }
 
-/* Pill Badges */
+/* Signature Champagne Blush Header CTA (matching Reference Screenshot) */
+.btn-blush-header {
+  background: linear-gradient(135deg, #fce3eb 0%, #f1becf 100%);
+  color: #2b0f1b;
+  box-shadow: 0 8px 24px -6px rgba(249, 208, 222, 0.42);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-blush-header:hover {
+  background: linear-gradient(135deg, #ffffff 0%, #f6cedb 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px -6px rgba(255, 226, 236, 0.55);
+}
+
+/* Pill Badges over Silk Backdrop */
 .badge-wellness {
-  background: var(--color-blush);
-  color: var(--color-rose);
-  border: 1px solid var(--color-blush-border);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff3f7;
+  border: 1px solid rgba(247, 198, 214, 0.42);
+  backdrop-filter: blur(12px);
 }
 
 /* Active Pricing Option */
 .pricing-card.active-plan {
-  border-color: var(--color-rose);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(253, 245, 247, 0.9) 100%);
-  box-shadow: 0 25px 50px -12px rgba(200, 75, 105, 0.2);
+  border-color: #f6b8ca;
+  background: linear-gradient(135deg, rgba(246, 184, 202, 0.18) 0%, rgba(124, 38, 70, 0.44) 100%);
+  box-shadow: 0 25px 50px -12px rgba(246, 184, 202, 0.25);
 }
 
-/* Sticky Bottom Buy Bar */
+/* Sticky Bottom Buy Bar (Velvet Plum Frosted Glass) */
 .sticky-buy-bar {
   transform: translateY(120%);
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -142,22 +142,23 @@ body {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #ffffff;
+  background: #220913;
 }
 ::-webkit-scrollbar-thumb {
-  background: #e8b8c5;
+  background: #8e3e5d;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #c84b69;
+  background: #e05d7f;
 }
 
 /* ==========================================================================
-   CART & CHECKOUT DRAWER
+   CART & CHECKOUT DRAWER (High-Contrast Pearl Surface for Checkout Clarity)
    ========================================================================== */
 #cart-drawer {
   will-change: transform;
   z-index: 9999;
+  color: #111113;
 }
 
 #cart-drawer.open {

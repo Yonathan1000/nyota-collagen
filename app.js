@@ -39,23 +39,23 @@ function initThreeJsScrollytelling() {
   renderer.toneMappingExposure = 1.18;
   renderer.outputEncoding = THREE.sRGBEncoding;
 
-  // 2. STUDIO LIGHTING (Pure White Luxury Setup)
-  const ambientLight = new THREE.AmbientLight(0xffffff, 1.05);
+  // 2. STUDIO LIGHTING (Velvet Burgundy Silk Studio Setup)
+  const ambientLight = new THREE.AmbientLight(0xffeef4, 1.25);
   scene.add(ambientLight);
 
-  const keyLight = new THREE.DirectionalLight(0xfffaf4, 2.4);
+  const keyLight = new THREE.DirectionalLight(0xfff4ee, 2.55);
   keyLight.position.set(-3.5, 4.5, 4.0);
   scene.add(keyLight);
 
-  const fillLight = new THREE.DirectionalLight(0xf2f6ff, 1.35);
+  const fillLight = new THREE.DirectionalLight(0xf6dae6, 1.3);
   fillLight.position.set(3.5, 2.0, 3.5);
   scene.add(fillLight);
 
-  const rimLight = new THREE.DirectionalLight(0xd45d79, 3.5); // Signature couture pink rim
+  const rimLight = new THREE.DirectionalLight(0xff9cc0, 4.2); // Signature champagne-rose backlit rim
   rimLight.position.set(3.0, 3.5, -3.5);
   scene.add(rimLight);
 
-  const bounceLight = new THREE.PointLight(0xffffff, 0.65, 10);
+  const bounceLight = new THREE.PointLight(0xe57a9c, 1.05, 10); // Silk floor bounce illumination
   bounceLight.position.set(0, -2.5, 2.0);
   scene.add(bounceLight);
 
@@ -65,35 +65,37 @@ function initThreeJsScrollytelling() {
 
   const sphereGeo = new THREE.SphereGeometry(1, 28, 28);
 
-  // Material 1: Pure Liquid Hyaluronic Acid & Micellar Gel (Translucent glass / pearl gel)
+  // Material 1: Pearlescent Liquid Hyaluronic Beads (matching silk droplets)
   const matHyaluronic = new THREE.MeshPhysicalMaterial({
-    color: 0xffffff,
-    transmission: 0.90,
-    opacity: 0.95,
+    color: 0xffedf3,
+    transmission: 0.72,
+    opacity: 0.94,
     transparent: true,
-    roughness: 0.10,
+    roughness: 0.12,
     ior: 1.333,
     thickness: 0.6,
     specularIntensity: 1.0,
     specularColor: 0xffffff,
     clearcoat: 1.0,
-    clearcoatRoughness: 0.08,
-    attenuationColor: new THREE.Color(0xfdecf0),
+    clearcoatRoughness: 0.06,
+    emissive: 0x5c1f35,
+    emissiveIntensity: 0.28,
+    attenuationColor: new THREE.Color(0xf7b9cc),
     attenuationDistance: 0.6
   });
 
-  // Material 2: Active Polyphenols & Antioxidant Superfruit Essence (Ruby / Couture Rose Glow)
+  // Material 2: Active Polyphenols & Antioxidant Superfruit Essence (Luminous Ruby-Rose Glow)
   const matPolyphenol = new THREE.MeshPhysicalMaterial({
-    color: 0xc84b69,
-    transmission: 0.40,
+    color: 0xe67c9d,
+    transmission: 0.38,
     opacity: 0.95,
     transparent: true,
-    roughness: 0.14,
-    metalness: 0.05,
+    roughness: 0.12,
+    metalness: 0.06,
     clearcoat: 1.0,
-    clearcoatRoughness: 0.10,
-    emissive: 0x5a1224,
-    emissiveIntensity: 0.45
+    clearcoatRoughness: 0.08,
+    emissive: 0x7c1f40,
+    emissiveIntensity: 0.55
   });
 
   const sphereData = [];
@@ -156,16 +158,16 @@ function initThreeJsScrollytelling() {
     });
   }
 
-  // 3. CONTACT SHADOW DISC (Procedural soft radial shadow grounded directly under jar base)
+  // 3. CONTACT SHADOW DISC (Grounded directly under jar base on satin surface)
   const shadowCanvas = document.createElement('canvas');
   shadowCanvas.width = 512;
   shadowCanvas.height = 512;
   const sCtx = shadowCanvas.getContext('2d');
   const gradient = sCtx.createRadialGradient(256, 256, 12, 256, 256, 235);
-  gradient.addColorStop(0, 'rgba(12, 10, 15, 0.65)');    // Dark crisp core occlusion
-  gradient.addColorStop(0.28, 'rgba(22, 18, 24, 0.40)'); // Contact penumbra
-  gradient.addColorStop(0.58, 'rgba(180, 60, 90, 0.10)'); // Signature warm rose glow
-  gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');    // Clean falloff
+  gradient.addColorStop(0, 'rgba(14, 3, 8, 0.78)');      // Deep plum-obsidian contact occlusion
+  gradient.addColorStop(0.28, 'rgba(28, 8, 17, 0.48)');   // Soft satin penumbra
+  gradient.addColorStop(0.60, 'rgba(138, 42, 76, 0.16)'); // Rose silk floor reflection
+  gradient.addColorStop(1, 'rgba(34, 9, 19, 0)');         // Seamless falloff
   sCtx.fillStyle = gradient;
   sCtx.fillRect(0, 0, 512, 512);
 
@@ -485,19 +487,22 @@ function initThreeJsScrollytelling() {
 function initPricingSelector() {
   const cards = document.querySelectorAll('.pricing-option-card');
   const totalDisplay = document.getElementById('selected-price-display');
+  const regularDisplay = document.getElementById('selected-regular-price-display');
   const ctaBtn = document.getElementById('btn-checkout-whatsapp');
   let selectedTier = 'duo';
 
   const tiers = {
     single: {
       name: 'Tratamiento 30 Días (1 Frasco 450g)',
-      price: 'S/. 179',
-      message: 'Hola NYOTA, deseo ordenar 1 Frasco de NYOTA COLLAGEN ENERGY (Tratamiento 30 Días 450g por S/. 179). ¿Cuáles son los métodos de pago y tiempo de entrega en Lima?'
+      price: 'S/. 161.10',
+      regularPrice: 'S/. 179.00',
+      message: 'Hola NYOTA, deseo ordenar 1 Frasco de NYOTA COLLAGEN ENERGY (Tratamiento 30 Días 450g) aprovechando el 10% OFF Primera Compra (S/. 161.10). ¿Envío Gratis a Lima o S/. 10 a provincia?'
     },
     duo: {
-      name: 'Tratamiento Dúo 60 Días (2 Frascos · 900g + Envío Gratis)',
-      price: 'S/. 319',
-      message: 'Hola NYOTA, deseo ordenar el Pack Dúo (2 Frascos 450g por S/. 319 con Envío Gratis). ¿Cuáles son los métodos de pago disponibles?'
+      name: 'Tratamiento Dúo 60 Días (2 Frascos · 900g)',
+      price: 'S/. 287.10',
+      regularPrice: 'S/. 319.00',
+      message: 'Hola NYOTA, deseo ordenar el Pack Dúo (2 Frascos 450g) aprovechando el 10% OFF Primera Compra (S/. 287.10). Deseo coordinar mi envío.'
     }
   };
 
@@ -509,6 +514,9 @@ function initPricingSelector() {
 
       if (totalDisplay) {
         totalDisplay.textContent = tiers[selectedTier].price;
+      }
+      if (regularDisplay) {
+        regularDisplay.textContent = tiers[selectedTier].regularPrice;
       }
       updateCtaLink();
     });
@@ -543,6 +551,9 @@ function initCartDrawer() {
   const headerBadge = document.getElementById('header-cart-badge');
   
   const subtotalDisplay = document.getElementById('cart-summary-subtotal');
+  const discountToggle = document.getElementById('cart-first-purchase-toggle');
+  const discountRow = document.getElementById('cart-summary-discount-row');
+  const discountDisplay = document.getElementById('cart-summary-discount');
   const shippingDisplay = document.getElementById('cart-summary-shipping');
   const totalDisplay = document.getElementById('cart-summary-total');
   
@@ -630,10 +641,11 @@ function initCartDrawer() {
     })
     .catch(() => {});
 
-  // Cart State
+  // Cart State (Regular unit prices; 10% First Purchase applies dynamically)
   let state = {
     tier: 'duo', // 'single' | 'duo'
     quantity: 1,
+    firstPurchase: true,
     prices: {
       single: 179,
       duo: 319
@@ -643,6 +655,21 @@ function initCartDrawer() {
       duo: 'Pack Dúo (2 Frascos · 900 g) — Tratamiento 60 Días'
     }
   };
+
+  function computeOrderPricing(destinationOverride) {
+    const unitPrice = state.prices[state.tier];
+    const subtotal = Number((unitPrice * state.quantity).toFixed(2));
+    const discountRate = state.firstPurchase ? 0.10 : 0;
+    const discountAmount = Number((subtotal * discountRate).toFixed(2));
+    const destination = destinationOverride || (destinationSelect ? destinationSelect.value : 'lima');
+
+    // Uniform Shipping Policy: Free in Lima Metropolitana, S/. 10 flat rate to Provincias
+    const shippingCost = destination === 'lima' ? 0 : 10;
+    const shippingText = destination === 'lima' ? 'Gratis (Lima Metropolitana)' : 'S/. 10.00 (Provincia)';
+    const total = Number((subtotal - discountAmount + shippingCost).toFixed(2));
+
+    return { unitPrice, subtotal, discountAmount, shippingCost, shippingText, destination, total };
+  }
 
   function openDrawer(preferredTier) {
     if (!drawer || !overlay) return;
@@ -694,44 +721,39 @@ function initCartDrawer() {
   }
 
   function updateTotals() {
-    const unitPrice = state.prices[state.tier];
-    const subtotal = unitPrice * state.quantity;
-    
-    const isDuo = state.tier === 'duo';
-    const destination = destinationSelect ? destinationSelect.value : 'lima';
-    
-    // Pack Duo includes free shipping in Lima. For single, S/. 15 shipping.
-    let shippingCost = 0;
-    let shippingText = 'Gratis (Pack Dúo)';
-
-    if (!isDuo) {
-      shippingCost = destination === 'lima' ? 12 : 20;
-      shippingText = `S/. ${shippingCost.toFixed(2)}`;
-    } else {
-      if (destination === 'provincias') {
-        shippingCost = 15;
-        shippingText = 'S/. 15.00 (Provincia)';
-      } else {
-        shippingCost = 0;
-        shippingText = 'Gratis (Lima Metropolitana)';
-      }
-    }
-
-    const total = subtotal + shippingCost;
+    const pricing = computeOrderPricing();
+    const promoUnitPrice = state.firstPurchase
+      ? Number((pricing.unitPrice * 0.90).toFixed(2))
+      : pricing.unitPrice;
 
     if (qtyDisplay) qtyDisplay.textContent = state.quantity;
     if (headerBadge) headerBadge.textContent = state.quantity;
-    if (subtotalDisplay) subtotalDisplay.textContent = `S/. ${subtotal.toFixed(2)}`;
-    if (shippingDisplay) {
-      shippingDisplay.textContent = shippingText;
-      shippingDisplay.className = shippingCost === 0 ? 'font-semibold text-emerald-600' : 'font-semibold text-[#111113]';
+    if (subtotalDisplay) subtotalDisplay.textContent = `S/. ${pricing.subtotal.toFixed(2)}`;
+
+    if (discountRow) {
+      discountRow.classList.toggle('hidden', !state.firstPurchase);
     }
-    if (totalDisplay) totalDisplay.textContent = `S/. ${total.toFixed(2)}`;
+    if (discountDisplay) {
+      discountDisplay.textContent = `- S/. ${pricing.discountAmount.toFixed(2)}`;
+    }
+
+    if (shippingDisplay) {
+      shippingDisplay.textContent = pricing.shippingText;
+      shippingDisplay.className = pricing.shippingCost === 0
+        ? 'font-semibold text-emerald-600'
+        : 'font-semibold text-[#111113]';
+    }
+    if (totalDisplay) totalDisplay.textContent = `S/. ${pricing.total.toFixed(2)}`;
 
     // Sync on-page offer price display
     const onPagePrice = document.getElementById('selected-price-display');
     if (onPagePrice) {
-      onPagePrice.textContent = `S/. ${unitPrice}`;
+      onPagePrice.textContent = `S/. ${promoUnitPrice.toFixed(2)}`;
+    }
+    const onPageRegular = document.getElementById('selected-regular-price-display');
+    if (onPageRegular) {
+      onPageRegular.textContent = `S/. ${pricing.unitPrice.toFixed(2)}`;
+      onPageRegular.classList.toggle('hidden', !state.firstPurchase);
     }
   }
 
@@ -796,6 +818,13 @@ function initCartDrawer() {
     destinationSelect.addEventListener('change', updateTotals);
   }
 
+  if (discountToggle) {
+    discountToggle.addEventListener('change', () => {
+      state.firstPurchase = Boolean(discountToggle.checked);
+      updateTotals();
+    });
+  }
+
   // Helper to validate and gather customer fields
   function getCustomerData() {
     const name = document.getElementById('cust-name')?.value.trim();
@@ -832,19 +861,16 @@ function initCartDrawer() {
   if (btnPayWhatsapp) {
     btnPayWhatsapp.addEventListener('click', () => {
       const cust = getCustomerData();
-      const unitPrice = state.prices[state.tier];
-      const subtotal = unitPrice * state.quantity;
-      const isDuo = state.tier === 'duo';
-      let shippingCost = isDuo && cust.destination === 'lima' ? 0 : (isDuo ? 15 : (cust.destination === 'lima' ? 12 : 20));
-      const total = subtotal + shippingCost;
+      const pricing = computeOrderPricing(cust.destination);
 
       let msg = `*NUEVO PEDIDO NYOTA COLLAGEN ENERGY*\n` +
         `----------------------------------------\n` +
         `*Tratamiento:* ${state.names[state.tier]}\n` +
         `*Cantidad:* ${state.quantity} unidad(es)\n` +
-        `*Subtotal:* S/. ${subtotal.toFixed(2)}\n` +
-        `*Envío:* ${shippingCost === 0 ? 'Gratis' : `S/. ${shippingCost.toFixed(2)}`}\n` +
-        `*Total a Pagar:* S/. ${total.toFixed(2)}\n` +
+        `*Subtotal:* S/. ${pricing.subtotal.toFixed(2)}\n` +
+        (state.firstPurchase ? `*Descuento 1ª Compra (-10%):* - S/. ${pricing.discountAmount.toFixed(2)}\n` : '') +
+        `*Envío:* ${pricing.shippingCost === 0 ? 'Gratis (Lima Metropolitana)' : `S/. ${pricing.shippingCost.toFixed(2)} (Provincia)`}\n` +
+        `*Total a Pagar:* S/. ${pricing.total.toFixed(2)}\n` +
         `----------------------------------------\n` +
         `*DATOS DE ENTREGA*\n` +
         `*Nombre:* ${cust.name || 'Por coordinar'}\n` +
@@ -998,14 +1024,11 @@ function initCartDrawer() {
         return;
       }
 
-      const unitPrice = state.prices[state.tier];
-      const subtotal = unitPrice * state.quantity;
-      const isDuo = state.tier === 'duo';
-      let shippingCost = isDuo && cust.destination === 'lima' ? 0 : (isDuo ? 15 : (cust.destination === 'lima' ? 12 : 20));
-      const total = subtotal + shippingCost;
+      const pricing = computeOrderPricing(cust.destination);
+      const total = pricing.total;
       const orderId = `NYOTA-${Date.now()}`;
 
-      activeOrderContext = { orderId, total, customer: cust, tier: state.tier, quantity: state.quantity };
+      activeOrderContext = { orderId, total, customer: cust, tier: state.tier, quantity: state.quantity, firstPurchase: state.firstPurchase };
 
       // Loading state
       btnPayIzipay.disabled = true;
@@ -1024,7 +1047,9 @@ function initCartDrawer() {
             metadata: {
               tier: state.tier,
               quantity: String(state.quantity),
-              destination: cust.destination || 'lima'
+              destination: cust.destination || 'lima',
+              firstPurchaseDiscount: state.firstPurchase ? '10%' : '0%',
+              shippingCost: pricing.shippingCost.toFixed(2)
             }
           })
         });
