@@ -525,7 +525,7 @@ function initPricingSelector() {
   function updateCtaLink() {
     if (!ctaBtn) return;
     const msg = encodeURIComponent(tiers[selectedTier].message);
-    ctaBtn.href = `https://wa.me/51999999999?text=${msg}`;
+    ctaBtn.href = `https://wa.me/51922020069?text=${msg}`;
   }
 
   updateCtaLink();
@@ -559,6 +559,8 @@ function initCartDrawer() {
   
   const btnPayIzipay = document.getElementById('btn-pay-izipay');
   const btnPayText = document.getElementById('btn-pay-text');
+  const btnPayIconYape = document.getElementById('btn-pay-icon-yape');
+  const btnPayIconCard = document.getElementById('btn-pay-icon-card');
   const btnPayWhatsapp = document.getElementById('btn-pay-whatsapp');
   const btnEditData = document.getElementById('btn-edit-checkout-data');
   const btnNewOrder = document.getElementById('btn-new-order');
@@ -573,6 +575,28 @@ function initCartDrawer() {
   const modeBadge = document.getElementById('izipay-mode-badge');
   const receiptContainer = document.getElementById('izipay-payment-receipt');
   const notifBox = document.getElementById('cart-notification-box');
+
+  // Yape / Plin Screen Elements
+  const yapeScreen = document.getElementById('yape-confirmation-screen');
+  const yapeOrderCode = document.getElementById('yape-order-code');
+  const yapeClientName = document.getElementById('yape-client-name');
+  const yapeDisplayLocation = document.getElementById('yape-display-location');
+  const yapeDisplayAddress = document.getElementById('yape-display-address');
+  const yapeStepAmount = document.getElementById('yape-step-amount');
+  const yapeDisplayEmail = document.getElementById('yape-display-email');
+  const yapeDisplayPhone = document.getElementById('yape-display-phone');
+  const yapeDisplayFullName = document.getElementById('yape-display-fullname');
+  const yapeDisplayFullAddress = document.getElementById('yape-display-fulladdress');
+  const yapeDisplayCity = document.getElementById('yape-display-city');
+  const yapeDisplayProduct = document.getElementById('yape-display-product');
+  const yapeDisplayTotal = document.getElementById('yape-display-total');
+  const btnSendYapeWhatsapp = document.getElementById('btn-send-yape-whatsapp');
+  const btnYapeNewOrder = document.getElementById('btn-yape-new-order');
+
+  // Payment Method Selection State
+  let selectedPaymentMethod = 'yape'; // 'yape' | 'card'
+  const paymentMethodRadios = document.querySelectorAll('input[name="payment_method"]');
+  const paymentMethodCards = document.querySelectorAll('.payment-method-card');
 
   const destinationSelect = document.getElementById('cust-destination');
 
@@ -881,10 +905,58 @@ function initCartDrawer() {
         `*Dirección:* ${cust.address || 'Por coordinar'}\n\n` +
         `Hola, deseo coordinar mi pago y entrega prioritaria por este canal oficial.`;
 
-      const waUrl = `https://wa.me/51999999999?text=${encodeURIComponent(msg)}`;
+      const waUrl = `https://wa.me/51922020069?text=${encodeURIComponent(msg)}`;
       window.open(waUrl, '_blank');
     });
   }
+
+  // Handle Payment Method Cards Selection UI
+  function setPaymentMethod(method) {
+    selectedPaymentMethod = method;
+    paymentMethodRadios.forEach(r => {
+      r.checked = (r.value === method);
+    });
+
+    const yapeLabel = document.getElementById('payment-method-label-yape');
+    const cardLabel = document.getElementById('payment-method-label-card');
+
+    if (method === 'yape') {
+      if (yapeLabel) {
+        yapeLabel.className = 'payment-method-card flex flex-col justify-between p-3 rounded-2xl border-2 border-[#C84B69] bg-[#FDF5F7] cursor-pointer transition-all';
+      }
+      if (cardLabel) {
+        cardLabel.className = 'payment-method-card flex flex-col justify-between p-3 rounded-2xl border border-[#F5DCE3] bg-white cursor-pointer hover:border-[#C84B69] transition-all';
+      }
+      if (btnPayText) btnPayText.textContent = 'Continuar con Yape / Plin';
+      if (btnPayIconYape) btnPayIconYape.classList.remove('hidden');
+      if (btnPayIconCard) btnPayIconCard.classList.add('hidden');
+    } else {
+      if (yapeLabel) {
+        yapeLabel.className = 'payment-method-card flex flex-col justify-between p-3 rounded-2xl border border-[#F5DCE3] bg-white cursor-pointer hover:border-[#C84B69] transition-all';
+      }
+      if (cardLabel) {
+        cardLabel.className = 'payment-method-card flex flex-col justify-between p-3 rounded-2xl border-2 border-[#C84B69] bg-[#FDF5F7] cursor-pointer transition-all';
+      }
+      if (btnPayText) btnPayText.textContent = 'Pagar con Tarjeta Online';
+      if (btnPayIconYape) btnPayIconYape.classList.add('hidden');
+      if (btnPayIconCard) btnPayIconCard.classList.remove('hidden');
+    }
+  }
+
+  paymentMethodRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      setPaymentMethod(radio.value);
+    });
+  });
+
+  paymentMethodCards.forEach(card => {
+    card.addEventListener('click', () => {
+      const radio = card.querySelector('input[name="payment_method"]');
+      if (radio) {
+        setPaymentMethod(radio.value);
+      }
+    });
+  });
 
   let activeOrderContext = null;
 
@@ -897,6 +969,7 @@ function initCartDrawer() {
     }
     if (paymentContainer) paymentContainer.classList.add('hidden');
     if (receiptContainer) receiptContainer.classList.add('hidden');
+    if (yapeScreen) yapeScreen.classList.add('hidden');
     if (presentationSection) presentationSection.classList.remove('hidden');
     if (qtySection) qtySection.classList.remove('hidden');
     if (customerFormSection) customerFormSection.classList.remove('hidden');
@@ -906,7 +979,7 @@ function initCartDrawer() {
       btnPayIzipay.classList.remove('hidden');
       btnPayIzipay.disabled = false;
     }
-    if (btnPayText) btnPayText.textContent = 'Pagar con Tarjeta / Yape / Plin';
+    setPaymentMethod(selectedPaymentMethod);
     if (notifBox) notifBox.classList.add('hidden');
   }
 
@@ -916,6 +989,13 @@ function initCartDrawer() {
 
   if (btnNewOrder) {
     btnNewOrder.addEventListener('click', () => {
+      activeOrderContext = null;
+      resetToCheckoutForm();
+    });
+  }
+
+  if (btnYapeNewOrder) {
+    btnYapeNewOrder.addEventListener('click', () => {
       activeOrderContext = null;
       resetToCheckoutForm();
     });
@@ -991,7 +1071,7 @@ function initCartDrawer() {
               `Distrito: ${c.district || ''}\n` +
               `Dirección: ${c.address || ''}\n` +
               `¡Hola! Acabo de completar mi pago en línea, deseo coordinar mi entrega.`;
-            rWaLink.href = `https://wa.me/51999999999?text=${encodeURIComponent(waText)}`;
+            rWaLink.href = `https://wa.me/51922020069?text=${encodeURIComponent(waText)}`;
           }
 
           if (receiptContainer) receiptContainer.classList.remove('hidden');
@@ -1014,7 +1094,7 @@ function initCartDrawer() {
     });
   }
 
-  // Handle izipay Online Payment
+  // Handle Main Payment Button (Yape/Plin Step-by-Step or izipay Online Card)
   if (btnPayIzipay) {
     btnPayIzipay.addEventListener('click', async () => {
       const cust = getCustomerData();
@@ -1026,13 +1106,76 @@ function initCartDrawer() {
 
       const pricing = computeOrderPricing(cust.destination);
       const total = pricing.total;
-      const orderId = `NYOTA-${Date.now()}`;
+      const orderCodeNum = String(Date.now()).slice(-4);
+      const orderId = `VIXN${orderCodeNum}NY`;
 
       activeOrderContext = { orderId, total, customer: cust, tier: state.tier, quantity: state.quantity, firstPurchase: state.firstPurchase };
 
-      // Loading state
+      // Case 1: YAPE / PLIN STEP-BY-STEP WORKFLOW
+      if (selectedPaymentMethod === 'yape') {
+        if (notifBox) notifBox.classList.add('hidden');
+
+        // Hide checkout form and drawer footer
+        if (presentationSection) presentationSection.classList.add('hidden');
+        if (qtySection) qtySection.classList.add('hidden');
+        if (customerFormSection) customerFormSection.classList.add('hidden');
+        if (drawerFooter) drawerFooter.classList.add('hidden');
+        if (paymentContainer) paymentContainer.classList.add('hidden');
+        if (receiptContainer) receiptContainer.classList.add('hidden');
+
+        // Populate Yape Confirmation Screen
+        if (yapeOrderCode) yapeOrderCode.textContent = orderId;
+        const firstName = (cust.name || 'Cliente').split(' ')[0];
+        if (yapeClientName) yapeClientName.textContent = firstName;
+
+        const regionCode = cust.destination === 'lima' ? 'PE-LIM' : 'PE-PROV';
+        if (yapeDisplayLocation) yapeDisplayLocation.textContent = `${cust.district || 'Lima'}, ${regionCode}`;
+        if (yapeDisplayAddress) yapeDisplayAddress.textContent = cust.address || '';
+        if (yapeStepAmount) yapeStepAmount.textContent = `S/. ${total.toFixed(2)}`;
+
+        if (yapeDisplayEmail) yapeDisplayEmail.textContent = cust.email || '';
+        if (yapeDisplayPhone) yapeDisplayPhone.textContent = cust.phone || '';
+        if (yapeDisplayFullName) yapeDisplayFullName.textContent = cust.name || '';
+        if (yapeDisplayFullAddress) yapeDisplayFullAddress.textContent = cust.address || '';
+        if (yapeDisplayCity) yapeDisplayCity.textContent = `${cust.district || ''} (Destino: ${cust.destination === 'lima' ? 'Lima Metropolitana' : 'Provincias'})`;
+        if (yapeDisplayProduct) yapeDisplayProduct.textContent = `${state.names[state.tier]} (${state.quantity} unidad${state.quantity > 1 ? 'es' : ''})`;
+        if (yapeDisplayTotal) yapeDisplayTotal.textContent = `S/. ${total.toFixed(2)}`;
+
+        // Build WhatsApp pre-filled verification message
+        const waYapeMsg =
+          `*CONFIRMACIÓN DE PEDIDO NYOTA (YAPE / PLIN)*\n` +
+          `----------------------------------------\n` +
+          `*N° Pedido:* ${orderId}\n` +
+          `*Cliente:* ${cust.name}\n` +
+          `*WhatsApp:* ${cust.phone}\n` +
+          `*DNI/RUC:* ${cust.dni}\n` +
+          `*Destino:* ${cust.district} (${cust.destination === 'lima' ? 'Lima Metropolitana' : 'Provincias'})\n` +
+          `*Dirección:* ${cust.address}\n` +
+          `----------------------------------------\n` +
+          `*Tratamiento:* ${state.names[state.tier]} (Cant: ${state.quantity})\n` +
+          (state.firstPurchase ? `*Descuento 1ª Compra (-10%):* Aplicado\n` : '') +
+          `*Envío:* ${pricing.shippingCost === 0 ? 'Gratis (Lima Metropolitana)' : `S/. ${pricing.shippingCost.toFixed(2)} (Provincia)`}\n` +
+          `*TOTAL PAGADO / A CONFIRMAR:* S/. ${total.toFixed(2)}\n` +
+          `----------------------------------------\n` +
+          `¡Hola NYOTA! Acabo de realizar mi pago por Yape/Plin a nombre de NYOTA. Adjunto el comprobante de pago para que procedan con el despacho de mi pedido.`;
+
+        if (btnSendYapeWhatsapp) {
+          btnSendYapeWhatsapp.href = `https://wa.me/51922020069?text=${encodeURIComponent(waYapeMsg)}`;
+        }
+
+        if (yapeScreen) {
+          yapeScreen.classList.remove('hidden');
+        }
+
+        if (drawerBody) {
+          drawerBody.scrollTop = 0;
+        }
+        return;
+      }
+
+      // Case 2: ONLINE CARD PAYMENT (izipay)
       btnPayIzipay.disabled = true;
-      btnPayText.textContent = 'Generando transacción segura...';
+      btnPayText.textContent = 'Generando pasarela segura...';
       if (notifBox) notifBox.classList.add('hidden');
 
       try {

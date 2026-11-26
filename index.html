@@ -836,8 +836,8 @@
         <p class="text-xs text-[#DFC6CF] leading-relaxed">
           Atención personalizada para pedidos, confirmación de dosis y envíos a nivel nacional.
         </p>
-        <a href="https://wa.me/51999999999?text=Hola%20NYOTA,%20deseo%20m%C3%A1s%20informaci%C3%B3n" target="_blank" class="inline-flex items-center space-x-2 text-xs font-semibold text-[#F6B8CA] hover:text-white transition-colors group">
-          <span>WhatsApp Oficial NYOTA</span>
+        <a href="https://wa.me/51922020069?text=Hola%20NYOTA,%20deseo%20m%C3%A1s%20informaci%C3%B3n" target="_blank" class="inline-flex items-center space-x-2 text-xs font-semibold text-[#F6B8CA] hover:text-white transition-colors group">
+          <span>WhatsApp Oficial NYOTA (+51 922 020 069)</span>
           <svg class="w-3.5 h-3.5 text-[#F6B8CA] group-hover:translate-x-1 group-hover:text-white transition-all" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </a>
       </div>
@@ -1021,6 +1021,38 @@
             <input type="text" id="cust-address" required placeholder="Av. Los Sauces 450, Dpto 501" class="w-full px-3.5 py-2.5 rounded-xl border border-[#F5DCE3] text-xs text-[#111113] focus:outline-none focus:border-[#C84B69]">
           </div>
         </div>
+
+        <!-- Payment Method Selector -->
+        <div id="payment-method-selector-section" class="pt-3 border-t border-[#F5DCE3] space-y-2.5">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-[#5E5E66] block">Método de pago:</span>
+          
+          <div class="grid grid-cols-2 gap-2.5">
+            <!-- Option 1: Yape / Plin -->
+            <label id="payment-method-label-yape" class="payment-method-card flex flex-col justify-between p-3 rounded-2xl border-2 border-[#C84B69] bg-[#FDF5F7] cursor-pointer transition-all">
+              <div class="flex items-center justify-between mb-1">
+                <input type="radio" name="payment_method" value="yape" checked class="text-[#C84B69] focus:ring-[#C84B69]">
+                <span class="text-[9px] font-extrabold uppercase bg-[#00D3B8]/20 text-[#00897B] px-1.5 py-0.5 rounded-md">Inmediato</span>
+              </div>
+              <div class="font-bold text-xs text-[#111113] flex items-center space-x-1.5">
+                <span>Yape / Plin</span>
+              </div>
+              <div class="text-[10px] text-[#5E5E66] mt-0.5">Seguimiento por WhatsApp</div>
+            </label>
+
+            <!-- Option 2: Tarjeta de Crédito / Débito (izipay) -->
+            <label id="payment-method-label-card" class="payment-method-card flex flex-col justify-between p-3 rounded-2xl border border-[#F5DCE3] bg-white cursor-pointer hover:border-[#C84B69] transition-all">
+              <div class="flex items-center justify-between mb-1">
+                <input type="radio" name="payment_method" value="card" class="text-[#C84B69] focus:ring-[#C84B69]">
+                <span class="text-[9px] font-bold uppercase text-gray-500">Online</span>
+              </div>
+              <div class="font-bold text-xs text-[#111113] flex items-center space-x-1.5">
+                <span>Tarjeta</span>
+              </div>
+              <div class="text-[10px] text-[#5E5E66] mt-0.5">Visa, MC, Amex (izipay)</div>
+            </label>
+          </div>
+        </div>
+      </div>
       </div>
 
       <!-- izipay Payment Form Container (SmartForm Neon SPA) -->
@@ -1045,6 +1077,115 @@
         <button type="button" id="btn-edit-checkout-data" class="w-full text-[11px] font-semibold text-[#5E5E66] hover:text-[#C84B69] underline pt-1 cursor-pointer">
           Modificar presentación o datos de envío
         </button>
+      </div>
+
+      <!-- Yape / Plin Step-by-Step Confirmation Screen -->
+      <div id="yape-confirmation-screen" class="hidden space-y-4">
+        <!-- Order Header -->
+        <div class="flex items-center space-x-3.5 pb-2 border-b border-gray-100">
+          <div class="w-10 h-10 rounded-full border-2 border-emerald-500 flex items-center justify-center text-emerald-600 shrink-0 bg-emerald-50">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="min-w-0">
+            <div class="text-[11px] font-semibold text-[#5E5E66] uppercase tracking-wider">Confirmación N°<span id="yape-order-code">NY-8721</span></div>
+            <h4 class="font-bold text-lg text-[#111113] leading-tight truncate">¡Gracias, <span id="yape-client-name">Cliente</span>!</h4>
+          </div>
+        </div>
+
+        <!-- Styled Shipping Map / Destination Pin Card -->
+        <div class="relative rounded-2xl overflow-hidden border border-[#F5DCE3] bg-gradient-to-br from-[#FDF5F7] to-[#F7E7EC] p-4 text-center shadow-sm">
+          <div class="inline-flex items-center space-x-2 bg-white/90 backdrop-blur-sm px-3.5 py-1.5 rounded-full shadow-sm border border-[#F5DCE3] mb-2">
+            <svg class="w-3.5 h-3.5 text-[#C84B69] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            <span class="text-[11px] font-bold text-[#111113]">Dirección de envío</span>
+          </div>
+          <div id="yape-display-location" class="font-extrabold text-sm sm:text-base text-[#111113]">Miraflores, PE-LIM</div>
+          <p id="yape-display-address" class="text-[11px] text-[#5E5E66] mt-0.5 truncate">Av. Los Sauces 450</p>
+        </div>
+
+        <!-- Steps Card: "Tu pedido está confirmado" -->
+        <div class="rounded-2xl border border-gray-200 bg-white p-4 space-y-3.5 shadow-sm">
+          <div class="flex items-center justify-between border-b border-gray-100 pb-2">
+            <h5 class="font-bold text-sm text-[#111113]">Tu pedido está confirmado</h5>
+            <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-[#C84B69]/10 text-[#C84B69]">Yape / Plin</span>
+          </div>
+          
+          <ol class="space-y-3 text-xs text-[#111113]">
+            <li class="flex items-start space-x-2.5">
+              <span class="font-extrabold text-[#C84B69] text-xs shrink-0 w-4">1.</span>
+              <div>
+                <span>Realizar el pago de </span>
+                <strong id="yape-step-amount" class="text-[#C84B69] font-extrabold">S/. 161.10</strong>
+                <span> al número </span>
+                <span class="inline-flex items-center space-x-1 font-extrabold text-[#111113] bg-gray-100 px-2 py-0.5 rounded-md select-all">
+                  <span>922 020 069</span>
+                </span>
+              </div>
+            </li>
+            <li class="flex items-start space-x-2.5">
+              <span class="font-extrabold text-[#C84B69] text-xs shrink-0 w-4">2.</span>
+              <div>
+                <span>Verificar que el nombre coincida exactamente con </span>
+                <strong class="font-extrabold text-[#111113] bg-[#FDF5F7] px-2 py-0.5 rounded-md border border-[#F5DCE3]">NYOTA</strong>
+              </div>
+            </li>
+            <li class="flex items-start space-x-2.5">
+              <span class="font-extrabold text-[#C84B69] text-xs shrink-0 w-4">3.</span>
+              <div>
+                <span>Hacer una captura de pantalla y enviarlo mediante WhatsApp al mismo número de pago (<strong>922 020 069</strong>).</span>
+              </div>
+            </li>
+            <li class="flex items-start space-x-2.5">
+              <span class="font-extrabold text-[#C84B69] text-xs shrink-0 w-4">4.</span>
+              <div>
+                <span>Una vez verifiquemos que el dinero está disponible en la cuenta procedemos a enviar el producto.</span>
+              </div>
+            </li>
+          </ol>
+
+          <!-- WhatsApp Direct Action Button -->
+          <div class="pt-2">
+            <a id="btn-send-yape-whatsapp" href="#" target="_blank" class="w-full btn-primary-rose py-3 rounded-full text-xs font-bold uppercase tracking-wider flex items-center justify-center space-x-2 shadow-md hover:shadow-lg transition-all">
+              <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+              <span>Enviar Comprobante por WhatsApp</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Order Summary Details -->
+        <div class="rounded-2xl border border-gray-200 bg-gray-50/70 p-4 space-y-2 text-xs">
+          <h5 class="font-bold text-xs text-[#111113] border-b border-gray-200 pb-1.5">Detalles del pedido</h5>
+          
+          <div class="space-y-1 text-[#5E5E66] pt-1">
+            <span class="font-semibold text-[#111113] block">Información de contacto</span>
+            <div id="yape-display-email" class="truncate font-medium text-[#111113]">cliente@ejemplo.pe</div>
+            <div id="yape-display-phone" class="font-medium text-[#111113]">999 999 999</div>
+          </div>
+
+          <div class="space-y-1 text-[#5E5E66] pt-2 border-t border-gray-200">
+            <span class="font-semibold text-[#111113] block">Dirección de envío</span>
+            <div id="yape-display-fullname" class="font-medium text-[#111113]">Nombre Cliente</div>
+            <div id="yape-display-fulladdress" class="font-medium text-[#111113]">Dirección Completa</div>
+            <div id="yape-display-city" class="font-medium text-[#111113]">Lima, Miraflores</div>
+          </div>
+
+          <div class="pt-2 border-t border-gray-200 space-y-1">
+            <div class="flex justify-between text-[#5E5E66]">
+              <span>Producto:</span>
+              <span id="yape-display-product" class="font-semibold text-[#111113]">1 Frasco (450 g)</span>
+            </div>
+            <div class="flex justify-between text-[#5E5E66]">
+              <span>Monto total:</span>
+              <strong id="yape-display-total" class="font-extrabold text-[#C84B69] text-sm">S/. 161.10</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Back to edit / new order -->
+        <div class="pt-1">
+          <button type="button" id="btn-yape-new-order" class="w-full py-2.5 rounded-full border border-gray-300 text-xs font-semibold text-[#5E5E66] hover:text-[#111113] cursor-pointer">
+            Modificar datos o realizar otro pedido
+          </button>
+        </div>
       </div>
 
       <!-- Payment Confirmed Receipt Screen -->
@@ -1101,16 +1242,17 @@
 
       <!-- Action Buttons -->
       <div class="space-y-2.5">
-        <!-- Main Payment Button (izipay) -->
+        <!-- Main Payment Button -->
         <button id="btn-pay-izipay" class="w-full btn-primary-rose py-3.5 rounded-full text-xs font-bold tracking-wider uppercase flex items-center justify-center space-x-2 cursor-pointer shadow-lg hover:shadow-xl transition-all">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-          <span id="btn-pay-text">Pagar con Tarjeta / Yape / Plin</span>
+          <svg id="btn-pay-icon-yape" class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <svg id="btn-pay-icon-card" class="w-4 h-4 hidden shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+          <span id="btn-pay-text">Continuar con Yape / Plin</span>
         </button>
 
         <!-- WhatsApp Concierge Button -->
         <button id="btn-pay-whatsapp" class="w-full py-3 rounded-full border border-[#C84B69] text-[#C84B69] hover:bg-[#FDF5F7] text-xs font-bold tracking-wider uppercase flex items-center justify-center space-x-2 transition-all cursor-pointer">
-          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-          <span>Pedir por WhatsApp Concierge</span>
+          <svg class="w-3.5 h-3.5 fill-current shrink-0" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+          <span>Pedir por WhatsApp Directo</span>
         </button>
       </div>
 
@@ -1130,6 +1272,6 @@
   <script src="silk-background.js?v=3"></script>
 
   <!-- Main JavaScript App -->
-  <script src="app.js?v=23"></script>
+  <script src="app.js?v=24"></script>
 </body>
 </html>
