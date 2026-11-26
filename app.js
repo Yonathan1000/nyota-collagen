@@ -21,7 +21,7 @@ function initThreeJsScrollytelling() {
 
   const camera = new THREE.PerspectiveCamera(
     38,
-    window.innerWidth / window.innerHeight,
+    (document.documentElement.clientWidth || window.innerWidth) / window.innerHeight,
     0.1,
     100
   );
@@ -33,7 +33,7 @@ function initThreeJsScrollytelling() {
     antialias: true,
     powerPreference: 'high-performance'
   });
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(document.documentElement.clientWidth || window.innerWidth, window.innerHeight, false);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.18;
@@ -192,12 +192,46 @@ function initThreeJsScrollytelling() {
   const loaderIndicator = document.getElementById('scrub-loader');
   const loader = new THREE.GLTFLoader();
 
-  // Responsive metrics & dimensions calibrated to match the user's golden bounding zone
-  let isMobile = window.innerWidth < 1024;
-  let posX_Right = isMobile ? 0.68 : 1.45;
-  let posX_Left  = isMobile ? -0.68 : -1.45;
-  let targetBaseY = isMobile ? 0.05 : -0.18;
+  // Responsive metrics & dimensions calibrated dynamically for mobile, tablet, and desktop
+  function getResponsiveJarMetrics() {
+    const w = document.documentElement.clientWidth || window.innerWidth;
+    const h = window.innerHeight || 800;
+    const isNarrow = w < 1024;
+    const aspect = w / h;
+    // Frustum half-width at jar Z ~ 0.15 (distance 5.05 from camera at z=5.2, fov=38deg)
+    const visHalfW = 5.05 * Math.tan(THREE.MathUtils.degToRad(19)) * aspect;
+
+    let posX;
+    let baseY;
+    let jarScale;
+
+    if (!isNarrow) {
+      posX = 1.45;
+      baseY = -0.18;
+      jarScale = 11.2;
+    } else if (w >= 640) {
+      // Tablet (640px - 1023px): anchor jar cleanly at viewport edge without colliding with 64% text column
+      posX = Math.max(0.95, visHalfW * 0.94);
+      baseY = -0.05;
+      jarScale = 8.4;
+    } else {
+      // Mobile (< 640px): clean 50% edge-peek with zero overlap against text/stat cards
+      posX = Math.max(0.70, visHalfW * 0.98);
+      baseY = 0.05;
+      jarScale = 7.4;
+    }
+    return { isNarrow, posX, baseY, jarScale };
+  }
+
+  let metrics = getResponsiveJarMetrics();
+  let isMobile = metrics.isNarrow;
+  let posX_Right = metrics.posX;
+  let posX_Left  = -metrics.posX;
+  let targetBaseY = metrics.baseY;
   let jarHalfHeight = 0.827; // will be updated dynamically from scaled geometry
+  let loadedModelRef = null;
+  let baseCenterOffset = null;
+  let baseHalfHeight = 0;
 
   // Choreography configuration table for all 7 sections
   const sectionConfigs = [
@@ -218,10 +252,17 @@ function initThreeJsScrollytelling() {
   let sectionCenters = [];
 
   function measureSectionCenters() {
-    isMobile = window.innerWidth < 1024;
-    posX_Right = isMobile ? 0.68 : 1.45;
-    posX_Left  = isMobile ? -0.68 : -1.45;
-    targetBaseY = isMobile ? 0.05 : -0.18;
+    metrics = getResponsiveJarMetrics();
+    isMobile = metrics.isNarrow;
+    posX_Right = metrics.posX;
+    posX_Left  = -metrics.posX;
+    targetBaseY = metrics.baseY;
+
+    if (loadedModelRef && baseCenterOffset) {
+      loadedModelRef.scale.set(metrics.jarScale, metrics.jarScale, metrics.jarScale);
+      loadedModelRef.position.copy(baseCenterOffset).multiplyScalar(-metrics.jarScale);
+      jarHalfHeight = baseHalfHeight * metrics.jarScale;
+    }
 
     const scrollY = window.pageYOffset || document.documentElement.scrollTop;
     sectionCenters = sectionConfigs.map(cfg => {
@@ -319,7 +360,8 @@ function initThreeJsScrollytelling() {
       });
 
       // 1. Scale model first so bounding calculations are in world Three.js units
-      const scale = isMobile ? 8.5 : 11.2;
+      loadedModelRef = model;
+      const scale = metrics.jarScale;
       model.scale.set(scale, scale, scale);
       model.updateMatrixWorld(true);
 
@@ -331,6 +373,8 @@ function initThreeJsScrollytelling() {
       box.getCenter(center);
 
       // 3. Center model inside modelPivot so (0,0,0) is the EXACT geometric center of the jar
+      baseCenterOffset = center.clone().divideScalar(scale);
+      baseHalfHeight = (size.y / 2) / scale;
       model.position.set(-center.x, -center.y, -center.z);
       modelPivot.add(model);
 
@@ -476,9 +520,10 @@ function initThreeJsScrollytelling() {
   animate();
 
   window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
+    const cw = document.documentElement.clientWidth || window.innerWidth;
+    camera.aspect = cw / window.innerHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(cw, window.innerHeight, false);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   });
 }
@@ -1336,6 +1381,10 @@ function initStickyBar() {
   });
 
   window.addEventListener('mousemove', (e) => {
+    if (window.matchMedia && !window.matchMedia('(any-pointer: fine)').matches) {
+      setVisible(false);
+      return;
+    }
     const distFromBottom = window.innerHeight - e.clientY;
     const overFooterLink = e.target && typeof e.target.closest === 'function' && e.target.closest('footer a, footer button');
     if (!isHovered && overFooterLink) {
