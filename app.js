@@ -59,80 +59,66 @@ function initThreeJsScrollytelling() {
   bounceLight.position.set(0, -2.5, 2.0);
   scene.add(bounceLight);
 
-  // 2.5. BACKGROUND CONCEPT 3: MICRO-HYALURONIC SPHERES & ACTIVE ANTIOXIDANTS
+  // 2.5. BACKGROUND CONCEPT 3: SUBTLE ASCENDING HYALURONIC & POLYPHENOL PEARLS
   const spheresGroup = new THREE.Group();
   scene.add(spheresGroup);
 
-  const sphereGeo = new THREE.SphereGeometry(1, 28, 28);
+  const sphereGeo = new THREE.SphereGeometry(1, 24, 24);
 
-  // Material 1: Pearlescent Liquid Hyaluronic Beads (matching silk droplets)
+  // Material 1: Subtle Translucent Liquid Hyaluronic Beads
   const matHyaluronic = new THREE.MeshPhysicalMaterial({
     color: 0xffedf3,
-    transmission: 0.72,
-    opacity: 0.94,
+    transmission: 0.78,
+    opacity: 0.44,
     transparent: true,
-    roughness: 0.12,
+    roughness: 0.16,
     ior: 1.333,
-    thickness: 0.6,
-    specularIntensity: 1.0,
+    thickness: 0.45,
+    specularIntensity: 0.7,
     specularColor: 0xffffff,
-    clearcoat: 1.0,
-    clearcoatRoughness: 0.06,
+    clearcoat: 0.75,
+    clearcoatRoughness: 0.12,
     emissive: 0x5c1f35,
-    emissiveIntensity: 0.28,
+    emissiveIntensity: 0.10,
     attenuationColor: new THREE.Color(0xf7b9cc),
     attenuationDistance: 0.6
   });
 
-  // Material 2: Active Polyphenols & Antioxidant Superfruit Essence (Luminous Ruby-Rose Glow)
+  // Material 2: Subtle Polyphenol Superfruit Essence Pearls
   const matPolyphenol = new THREE.MeshPhysicalMaterial({
     color: 0xe67c9d,
-    transmission: 0.38,
-    opacity: 0.95,
+    transmission: 0.55,
+    opacity: 0.40,
     transparent: true,
-    roughness: 0.12,
-    metalness: 0.06,
-    clearcoat: 1.0,
-    clearcoatRoughness: 0.08,
+    roughness: 0.16,
+    metalness: 0.04,
+    clearcoat: 0.70,
+    clearcoatRoughness: 0.14,
     emissive: 0x7c1f40,
-    emissiveIntensity: 0.55
+    emissiveIntensity: 0.22
   });
 
   const sphereData = [];
-  const TOTAL_SPHERES = 46;
+  const TOTAL_SPHERES = 16;
 
-  // Curated distribution zones across the viewport
+  // Curated normalized horizontal & depth distribution (works cleanly on both desktop and mobile)
   for (let i = 0; i < TOTAL_SPHERES; i++) {
-    const isPolyphenol = (i % 3 === 0); // 1 in 3 is polyphenol antioxidant, 2 in 3 are hyaluronic
+    const isPolyphenol = (i % 3 === 0);
     const mat = isPolyphenol ? matPolyphenol : matHyaluronic;
     const mesh = new THREE.Mesh(sphereGeo, mat);
 
-    // Distribution across viewport:
-    let baseX, baseY, baseZ;
-    if (i < 20) {
-      // Left side (Editorial copy side)
-      baseX = -2.6 + Math.random() * 2.0;
-      baseY = -1.6 + Math.random() * 3.2;
-    } else if (i < 34) {
-      // Right side (around and framing the 3D jar)
-      baseX = 0.7 + Math.random() * 2.0;
-      baseY = -1.6 + Math.random() * 3.2;
-    } else {
-      // Center / Ambient background
-      baseX = -0.7 + Math.random() * 1.4;
-      baseY = -1.5 + Math.random() * 3.0;
-    }
+    // Normalized horizontal placement across -0.92..+0.92 of visible viewport width
+    const normX = ((i + 0.5) / TOTAL_SPHERES) * 1.84 - 0.92 + (Math.random() - 0.5) * 0.18;
+    const normY = Math.random(); // Initial phase across vertical travel span
+    const baseZ = -1.4 + Math.random() * 1.65;
+    const depthNorm = (baseZ + 1.4) / 1.65; // 0 (far) to 1 (near)
 
-    // Depth from z: -1.8 (distant background) to z: 0.35 (foreground)
-    baseZ = -1.6 + Math.random() * 1.95;
-
-    // Radius scaling
     const baseRadius = isPolyphenol
-      ? (0.042 + Math.random() * 0.045) // Polyphenols: delicate concentrated beads (0.042 to 0.087)
-      : (0.050 + Math.random() * 0.065); // Hyaluronic: hydrating beads (0.050 to 0.115)
+      ? (0.028 + Math.random() * 0.030)
+      : (0.032 + Math.random() * 0.040);
 
     mesh.scale.set(baseRadius, baseRadius, baseRadius);
-    mesh.position.set(baseX, baseY, baseZ);
+    mesh.position.set(normX * 1.4, (normY - 0.5) * 3.0, baseZ);
     mesh.castShadow = false;
     mesh.receiveShadow = false;
     spheresGroup.add(mesh);
@@ -140,21 +126,23 @@ function initThreeJsScrollytelling() {
     sphereData.push({
       mesh,
       isPolyphenol,
-      baseX,
-      baseY,
+      normX,
+      normY,
       baseZ,
-      x: baseX,
-      y: baseY,
+      x: normX * 1.4,
+      y: (normY - 0.5) * 3.0,
       z: baseZ,
+      prevTargetY: (normY - 0.5) * 3.0,
       vx: 0,
       vy: 0,
       vz: 0,
       radius: baseRadius,
-      driftSpeed: 0.5 + Math.random() * 0.8,
-      driftAmpX: 0.04 + Math.random() * 0.05,
-      driftAmpY: 0.05 + Math.random() * 0.06,
+      riseSpeed: 0.045 + Math.random() * 0.055,
+      scrollFactor: 0.75 + depthNorm * 0.85,
+      driftSpeed: 0.45 + Math.random() * 0.65,
+      driftAmpX: 0.035 + Math.random() * 0.045,
       phase: Math.random() * Math.PI * 2,
-      repulsionFactor: 0.8 + Math.random() * 0.5
+      repulsionFactor: 0.7 + Math.random() * 0.45
     });
   }
 
@@ -422,10 +410,13 @@ function initThreeJsScrollytelling() {
   }, { passive: true });
 
   let clock = new THREE.Clock();
+  let smoothScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
 
   function animate() {
     requestAnimationFrame(animate);
     const elapsedTime = clock.getElapsedTime();
+    const rawScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+    smoothScrollY += (rawScrollY - smoothScrollY) * 0.10;
 
     // Smooth interpolated mouse tracking
     const mouseAx = (mouseX - smoothMouse.x) * 0.12;
@@ -435,42 +426,55 @@ function initThreeJsScrollytelling() {
     smoothMouse.x += smoothMouse.vx;
     smoothMouse.y += smoothMouse.vy;
 
-    // 5. UPDATE MICRO-HYALURONIC SPHERES & ANTIOXIDANT PARTICLES (CONCEPT 3)
+    // 5. UPDATE ASCENDING MICRO-HYALURONIC & POLYPHENOL PEARLS (Scroll-driven bottom -> top)
     if (sphereData.length > 0) {
       const fovRad = THREE.MathUtils.degToRad(38 / 2);
       const distFromCam = 5.2; // camera at z = 5.2
+      const cw = document.documentElement.clientWidth || window.innerWidth;
       const visHalfH = distFromCam * Math.tan(fovRad);
-      const visHalfW = visHalfH * (window.innerWidth / window.innerHeight);
+      const visHalfW = visHalfH * (cw / window.innerHeight);
 
       // Mouse in world coordinates at z = 0 plane
       const mouseWorldX = smoothMouse.x * visHalfW * 2.0;
       const mouseWorldY = -smoothMouse.y * visHalfH * 2.0;
 
+      const bottomEdge = -visHalfH - 0.35;
+      const topEdge = visHalfH + 0.35;
+      const wrapSpan = topEdge - bottomEdge;
+
       for (let i = 0; i < sphereData.length; i++) {
         const s = sphereData[i];
 
-        // 1. Organic floating equilibrium point (Brownian & cellular breathing)
-        const targetX = s.baseX + Math.sin(elapsedTime * s.driftSpeed + s.phase) * s.driftAmpX;
-        const targetY = s.baseY + Math.cos(elapsedTime * s.driftSpeed * 0.85 + s.phase) * s.driftAmpY;
-        const targetZ = s.baseZ + Math.sin(elapsedTime * 0.6 + s.phase) * 0.04;
+        // 1. Responsive horizontal sway + upward travel driven by scroll & gentle drift
+        const targetX = (s.normX * visHalfW) + Math.sin(elapsedTime * s.driftSpeed + s.phase) * s.driftAmpX;
+        const rawTravel = (s.normY * wrapSpan) + (elapsedTime * s.riseSpeed) + (smoothScrollY * 0.0028 * s.scrollFactor);
+        const wrappedOffset = ((rawTravel % wrapSpan) + wrapSpan) % wrapSpan;
+        const targetY = bottomEdge + wrappedOffset;
+        const targetZ = s.baseZ + Math.sin(elapsedTime * 0.6 + s.phase) * 0.03;
+
+        // If bubble wrapped from top back to bottom, snap cleanly without streaking across screen
+        if (Math.abs(targetY - s.prevTargetY) > wrapSpan * 0.45) {
+          s.y = targetY;
+          s.vy = 0;
+        }
+        s.prevTargetY = targetY;
 
         // 2. Elastic Mouse Repulsion Field
         const dx = s.x - mouseWorldX;
         const dy = s.y - mouseWorldY;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        const repulsionRadius = 0.95; // ~260px interactive field
+        const repulsionRadius = 0.85;
 
         if (dist < repulsionRadius && dist > 0.001) {
-          // Smooth cosine ease-out repulsion curve
           const normDist = dist / repulsionRadius;
-          const repStrength = (1.0 - normDist) * 0.032 * s.repulsionFactor;
+          const repStrength = (1.0 - normDist) * 0.026 * s.repulsionFactor;
           s.vx += (dx / dist) * repStrength;
           s.vy += (dy / dist) * repStrength;
         }
 
-        // 3. Spring physics returning to equilibrium (Hooke's law + damping)
-        const kSpring = 0.040;
-        const kDamping = 0.86;
+        // 3. Spring physics returning to moving ascending equilibrium
+        const kSpring = 0.075;
+        const kDamping = 0.82;
 
         s.vx = (s.vx + (targetX - s.x) * kSpring) * kDamping;
         s.vy = (s.vy + (targetY - s.y) * kSpring) * kDamping;
@@ -480,10 +484,21 @@ function initThreeJsScrollytelling() {
         s.y += s.vy;
         s.z += s.vz;
 
-        // 4. Update 3D mesh position and subtle rotation
+        // Soft emergence from bottom edge & gentle fade-out at top edge
+        const normPos = Math.max(0, Math.min(1, (s.y - bottomEdge) / wrapSpan));
+        let edgeFade = 1.0;
+        if (normPos < 0.16) {
+          edgeFade = normPos / 0.16;
+        } else if (normPos > 0.84) {
+          edgeFade = (1.0 - normPos) / 0.16;
+        }
+        const scaledR = Math.max(0.0001, s.radius * edgeFade);
+
+        // 4. Update 3D mesh position, scale & subtle rotation
         s.mesh.position.set(s.x, s.y, s.z);
-        s.mesh.rotation.x += 0.004;
-        s.mesh.rotation.y += 0.006;
+        s.mesh.scale.set(scaledR, scaledR, scaledR);
+        s.mesh.rotation.x += 0.003;
+        s.mesh.rotation.y += 0.005;
       }
     }
 
