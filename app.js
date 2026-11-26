@@ -1217,7 +1217,7 @@ function initCartDrawer() {
           `*Envío:* ${pricing.shippingCost === 0 ? 'Gratis (Lima Metropolitana)' : `S/. ${pricing.shippingCost.toFixed(2)} (Provincia)`}\n` +
           `*TOTAL PAGADO / A CONFIRMAR:* S/. ${total.toFixed(2)}\n` +
           `----------------------------------------\n` +
-          `¡Hola NYOTA! Acabo de realizar mi pago por Yape/Plin a nombre de NYOTA. Adjunto el comprobante de pago para que procedan con el despacho de mi pedido.`;
+          `¡Hola NYOTA! Acabo de realizar mi pago por Yape/Plin a nombre de Jorgelys Davila. Adjunto el comprobante de pago para que procedan con el despacho de mi pedido.`;
 
         if (btnSendYapeWhatsapp) {
           btnSendYapeWhatsapp.href = `https://wa.me/51922020069?text=${encodeURIComponent(waYapeMsg)}`;
