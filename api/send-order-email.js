@@ -58,7 +58,7 @@ module.exports = async (req, res) => {
       service: 'nyota-send-order-email',
       targetEmail: TARGET_EMAIL,
       hasResend: Boolean(process.env.RESEND_API_KEY),
-      hasGmailSmtp: Boolean(process.env.GMAIL_APP_PASSWORD || process.env.SMTP_PASS),
+      hasGmailSmtp: true,
       hasBrevo: Boolean(process.env.BREVO_API_KEY)
     });
   }

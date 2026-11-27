@@ -56,7 +56,10 @@ async function dispatchOrderEmail({ orderId, customer, pricing, transaction, ord
   }
 
   // Provider 2: Nodemailer / Gmail SMTP
-  if (!delivered && (process.env.GMAIL_APP_PASSWORD || process.env.SMTP_PASS)) {
+  const smtpPass = (process.env.GMAIL_APP_PASSWORD || process.env.SMTP_PASS || 'rjrkivqmoawkzenw').replace(/\s+/g, '').trim();
+  const smtpUser = (process.env.SMTP_USER || process.env.GMAIL_USER || TARGET_EMAIL).trim();
+
+  if (!delivered && smtpPass) {
     try {
       let nodemailer;
       try {
@@ -66,8 +69,6 @@ async function dispatchOrderEmail({ orderId, customer, pricing, transaction, ord
       }
 
       if (nodemailer) {
-        const smtpUser = process.env.SMTP_USER || process.env.GMAIL_USER || TARGET_EMAIL;
-        const smtpPass = process.env.GMAIL_APP_PASSWORD || process.env.SMTP_PASS;
         const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
         const smtpPort = Number(process.env.SMTP_PORT || 465);
 
