@@ -10,6 +10,8 @@
 const { generateOrderEmailHtml } = require('./email-template');
 
 const TARGET_EMAIL = process.env.ORDER_NOTIFICATION_EMAIL || 'nyotapedidos@gmail.com';
+const BACKUP_EMAIL = 'jorgelysdavila64@gmail.com';
+const TARGET_EMAILS = [TARGET_EMAIL, BACKUP_EMAIL];
 
 async function dispatchOrderEmail({ orderId, customer, pricing, transaction, orderDate }) {
   if (!orderId) {
@@ -84,7 +86,7 @@ async function dispatchOrderEmail({ orderId, customer, pricing, transaction, ord
 
         const info = await transporter.sendMail({
           from: `"NYOTA Ventas" <${smtpUser}>`,
-          to: TARGET_EMAIL,
+          to: TARGET_EMAILS,
           subject: emailSubject,
           html: emailHtml
         });
@@ -92,7 +94,7 @@ async function dispatchOrderEmail({ orderId, customer, pricing, transaction, ord
         delivered = true;
         providerUsed = 'smtp-gmail';
         deliveryDetails = { messageId: info.messageId };
-        console.log(`[EMAIL DISPATCH] Sent via SMTP to ${TARGET_EMAIL}:`, info.messageId);
+        console.log(`[EMAIL DISPATCH] Sent via SMTP to ${TARGET_EMAILS.join(', ')}:`, info.messageId);
       }
     } catch (err) {
       console.error('[EMAIL DISPATCH] SMTP exception:', err.message);
