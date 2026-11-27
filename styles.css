@@ -49,12 +49,21 @@ body {
   letter-spacing: -0.02em;
 }
 
-/* React Silk Shader Root + Three.js WebGL Foreground Jar Canvas */
+/* React Silk Shader Root + Three.js WebGL Foreground Jar Canvas (Hardware Layer Promoted) */
 #react-silk-bg-root {
   position: fixed;
   inset: 0;
   z-index: 1;
   pointer-events: none;
+  transform: translateZ(0);
+}
+
+#react-silk-bg-root canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 #webgl-canvas {
@@ -66,6 +75,8 @@ body {
   z-index: 2;
   pointer-events: none;
   display: block;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 /* Content Layer & Footer Anti-Drift Containment */

@@ -27,14 +27,16 @@ function initThreeJsScrollytelling() {
   );
   camera.position.set(0, 0, 5.2);
 
+  const isMobile = (document.documentElement.clientWidth || window.innerWidth) < 768;
+
   const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
     alpha: true, // 100% transparent pure white background
-    antialias: true,
+    antialias: !isMobile,
     powerPreference: 'high-performance'
   });
   renderer.setSize(document.documentElement.clientWidth || window.innerWidth, window.innerHeight, false);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setPixelRatio(isMobile ? 1.0 : Math.min(window.devicePixelRatio || 1, 1.5));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.18;
   renderer.outputEncoding = THREE.sRGBEncoding;
@@ -63,43 +65,36 @@ function initThreeJsScrollytelling() {
   const spheresGroup = new THREE.Group();
   scene.add(spheresGroup);
 
-  const sphereGeo = new THREE.SphereGeometry(1, 24, 24);
+  const sphereGeo = new THREE.SphereGeometry(1, 14, 14);
 
-  // Material 1: Subtle Translucent Liquid Hyaluronic Beads
+  // Material 1: Subtle Translucent Liquid Hyaluronic Beads (High performance physical)
   const matHyaluronic = new THREE.MeshPhysicalMaterial({
     color: 0xffedf3,
-    transmission: 0.78,
-    opacity: 0.44,
+    opacity: 0.65,
     transparent: true,
-    roughness: 0.16,
-    ior: 1.333,
-    thickness: 0.45,
-    specularIntensity: 0.7,
-    specularColor: 0xffffff,
-    clearcoat: 0.75,
-    clearcoatRoughness: 0.12,
+    roughness: 0.10,
+    metalness: 0.08,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.08,
     emissive: 0x5c1f35,
-    emissiveIntensity: 0.10,
-    attenuationColor: new THREE.Color(0xf7b9cc),
-    attenuationDistance: 0.6
+    emissiveIntensity: 0.14
   });
 
   // Material 2: Subtle Polyphenol Superfruit Essence Pearls
   const matPolyphenol = new THREE.MeshPhysicalMaterial({
     color: 0xe67c9d,
-    transmission: 0.55,
-    opacity: 0.40,
+    opacity: 0.60,
     transparent: true,
-    roughness: 0.16,
-    metalness: 0.04,
-    clearcoat: 0.70,
-    clearcoatRoughness: 0.14,
+    roughness: 0.12,
+    metalness: 0.12,
+    clearcoat: 0.90,
+    clearcoatRoughness: 0.10,
     emissive: 0x7c1f40,
-    emissiveIntensity: 0.22
+    emissiveIntensity: 0.25
   });
 
   const sphereData = [];
-  const TOTAL_SPHERES = 16;
+  const TOTAL_SPHERES = isMobile ? 8 : 14;
 
   // Curated normalized horizontal & depth distribution (works cleanly on both desktop and mobile)
   for (let i = 0; i < TOTAL_SPHERES; i++) {
@@ -148,16 +143,16 @@ function initThreeJsScrollytelling() {
 
   // 3. CONTACT SHADOW DISC (Grounded directly under jar base on satin surface)
   const shadowCanvas = document.createElement('canvas');
-  shadowCanvas.width = 512;
-  shadowCanvas.height = 512;
+  shadowCanvas.width = 256;
+  shadowCanvas.height = 256;
   const sCtx = shadowCanvas.getContext('2d');
-  const gradient = sCtx.createRadialGradient(256, 256, 12, 256, 256, 235);
+  const gradient = sCtx.createRadialGradient(128, 128, 6, 128, 128, 118);
   gradient.addColorStop(0, 'rgba(14, 3, 8, 0.78)');      // Deep plum-obsidian contact occlusion
   gradient.addColorStop(0.28, 'rgba(28, 8, 17, 0.48)');   // Soft satin penumbra
   gradient.addColorStop(0.60, 'rgba(138, 42, 76, 0.16)'); // Rose silk floor reflection
   gradient.addColorStop(1, 'rgba(34, 9, 19, 0)');         // Seamless falloff
   sCtx.fillStyle = gradient;
-  sCtx.fillRect(0, 0, 512, 512);
+  sCtx.fillRect(0, 0, 256, 256);
 
   const shadowTexture = new THREE.CanvasTexture(shadowCanvas);
   const shadowGeo = new THREE.PlaneGeometry(2.5, 2.5);
@@ -414,6 +409,7 @@ function initThreeJsScrollytelling() {
 
   function animate() {
     requestAnimationFrame(animate);
+    if (document.hidden) return;
     const elapsedTime = clock.getElapsedTime();
     const rawScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
     smoothScrollY += (rawScrollY - smoothScrollY) * 0.10;
@@ -536,10 +532,11 @@ function initThreeJsScrollytelling() {
 
   window.addEventListener('resize', () => {
     const cw = document.documentElement.clientWidth || window.innerWidth;
+    const isMob = cw < 768;
     camera.aspect = cw / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(cw, window.innerHeight, false);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setPixelRatio(isMob ? 1.0 : Math.min(window.devicePixelRatio || 1, 1.5));
   });
 }
 

@@ -19,7 +19,7 @@
 
   // Calibrated to the reference velvet plum-burgundy studio + flowing pearlescent blush silk ribbons
   const FRAGMENT_SHADER = `
-    precision highp float;
+    precision mediump float;
     varying vec2 vUv;
 
     uniform float uTime;
@@ -49,7 +49,7 @@
       float v = 0.0;
       float amp = 0.5;
       mat2 rot = mat2(0.82, -0.57, 0.57, 0.82);
-      for (int i = 0; i < 4; i++) {
+      for (int i = 0; i < 2; i++) {
         v += amp * noise(p);
         p = rot * p * 2.02 + vec2(1.7, 9.2);
         amp *= 0.5;
@@ -311,9 +311,10 @@
             const uScrollVel = gl.getUniformLocation(program, 'uScrollVel');
 
             function handleResize() {
-              const dpr = Math.min(window.devicePixelRatio || 1, 2);
-              canvas.width = Math.floor(window.innerWidth * dpr);
-              canvas.height = Math.floor(window.innerHeight * dpr);
+              const isMobile = window.innerWidth < 768;
+              const scaleFactor = isMobile ? 0.55 : 0.85;
+              canvas.width = Math.max(320, Math.floor(window.innerWidth * scaleFactor));
+              canvas.height = Math.max(240, Math.floor(window.innerHeight * scaleFactor));
               gl.viewport(0, 0, canvas.width, canvas.height);
             }
 
@@ -324,6 +325,10 @@
             const start = performance.now();
 
             function frame(now) {
+              if (document.hidden) {
+                rafId = requestAnimationFrame(frame);
+                return;
+              }
               const elapsed = (now - start) * 0.001;
               state.smoothMouseX += (state.mouseX - state.smoothMouseX) * 0.06;
               state.smoothMouseY += (state.mouseY - state.smoothMouseY) * 0.06;
