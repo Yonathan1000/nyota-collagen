@@ -1,0 +1,13 @@
+{
+  "name": "nyota-collagen",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NYOTA Haute Wellness & Beauty e-commerce store",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "nodemailer": "^6.9.16"
+  }
+}

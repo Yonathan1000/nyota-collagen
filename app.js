@@ -918,8 +918,14 @@ function initCartDrawer() {
     const destination = document.getElementById('cust-destination')?.value;
     const district = document.getElementById('cust-district')?.value.trim();
     const address = document.getElementById('cust-address')?.value.trim();
+    const reference = document.getElementById('cust-reference')?.value.trim() || '';
+    const deliveryNotes = document.getElementById('cust-delivery-notes')?.value.trim() || '';
+    const rawMapsUrl = document.getElementById('cust-maps-url')?.value.trim() || '';
 
-    return { name, phone, dni, email, destination, district, address };
+    // Smart fallback: If customer didn't provide GPS or link, construct Google Maps Search link
+    const mapsUrl = rawMapsUrl || (address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([address, district, destination === 'provincias' ? 'Perú' : 'Lima, Perú'].filter(Boolean).join(', '))}` : '');
+
+    return { name, phone, dni, email, destination, district, address, reference, deliveryNotes, mapsUrl };
   }
 
   function validateCustomer(cust) {
@@ -930,6 +936,121 @@ function initCartDrawer() {
     if (!cust.district) return 'Por favor, ingresa tu distrito o ciudad de destino.';
     if (!cust.address) return 'Por favor, ingresa la dirección de entrega.';
     return null;
+  }
+
+  // Interactive Google Maps & GPS Geolocation Controls
+  const btnDetectGps = document.getElementById('btn-detect-gps');
+  const btnOpenGmaps = document.getElementById('btn-open-gmaps');
+  const custMapsUrlInput = document.getElementById('cust-maps-url');
+  const btnTestMapsUrl = document.getElementById('btn-test-maps-url');
+  const mapsStatusText = document.getElementById('maps-status-text');
+  const iconGpsNormal = document.getElementById('icon-gps-normal');
+  const iconGpsLoading = document.getElementById('icon-gps-loading');
+  const textGpsBtn = document.getElementById('text-gps-btn');
+  const cardNoticePill = document.getElementById('card-notice-pill');
+
+  if (btnDetectGps) {
+    btnDetectGps.addEventListener('click', () => {
+      if (!navigator.geolocation) {
+        if (mapsStatusText) mapsStatusText.textContent = 'Tu navegador no admite geolocalización automática. Puedes usar "Abrir Google Maps".';
+        return;
+      }
+
+      if (iconGpsNormal) iconGpsNormal.classList.add('hidden');
+      if (iconGpsLoading) iconGpsLoading.classList.remove('hidden');
+      if (textGpsBtn) textGpsBtn.textContent = 'Detectando...';
+      btnDetectGps.disabled = true;
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const lat = position.coords.latitude.toFixed(6);
+          const lng = position.coords.longitude.toFixed(6);
+          const gmapsLink = `https://www.google.com/maps?q=${lat},${lng}`;
+
+          if (custMapsUrlInput) {
+            custMapsUrlInput.value = gmapsLink;
+            custMapsUrlInput.dispatchEvent(new Event('input'));
+          }
+
+          if (mapsStatusText) {
+            mapsStatusText.innerHTML = `<span class="text-emerald-700 font-bold">✓ Ubicación GPS detectada con éxito (${lat}, ${lng})</span>`;
+          }
+
+          if (iconGpsNormal) iconGpsNormal.classList.remove('hidden');
+          if (iconGpsLoading) iconGpsLoading.classList.add('hidden');
+          if (textGpsBtn) textGpsBtn.textContent = 'GPS Activo';
+          btnDetectGps.disabled = false;
+
+          // Helpful UX: try reverse geocoding if address / district are empty
+          const inputAddr = document.getElementById('cust-address');
+          const inputDist = document.getElementById('cust-district');
+          if ((!inputAddr || !inputAddr.value.trim()) || (!inputDist || !inputDist.value.trim())) {
+            try {
+              const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`, {
+                headers: { 'Accept': 'application/json' }
+              });
+              if (geoRes.ok) {
+                const geoData = await geoRes.json();
+                const road = geoData.address?.road || geoData.address?.pedestrian || geoData.address?.suburb || '';
+                const district = geoData.address?.city_district || geoData.address?.suburb || geoData.address?.city || '';
+                if (inputAddr && !inputAddr.value.trim() && road) {
+                  inputAddr.value = road;
+                }
+                if (inputDist && !inputDist.value.trim() && district) {
+                  inputDist.value = district;
+                }
+              }
+            } catch (_) {}
+          }
+        },
+        (err) => {
+          console.warn('[GPS geolocation error]', err);
+          if (iconGpsNormal) iconGpsNormal.classList.remove('hidden');
+          if (iconGpsLoading) iconGpsLoading.classList.add('hidden');
+          if (textGpsBtn) textGpsBtn.textContent = 'Usar mi GPS';
+          btnDetectGps.disabled = false;
+
+          const msg = err.code === 1
+            ? 'Acceso a ubicación denegado en tu navegador. Puedes pulsar "Abrir Google Maps" o ingresar tu dirección.'
+            : 'No se pudo obtener la posición GPS. Puedes ingresar tu dirección normalmente.';
+          if (mapsStatusText) mapsStatusText.textContent = msg;
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+      );
+    });
+  }
+
+  if (btnOpenGmaps) {
+    btnOpenGmaps.addEventListener('click', () => {
+      const addr = document.getElementById('cust-address')?.value.trim();
+      const dist = document.getElementById('cust-district')?.value.trim();
+      const q = [addr, dist, 'Lima, Peru'].filter(Boolean).join(', ');
+      const searchUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+      window.open(searchUrl, '_blank');
+      if (mapsStatusText) {
+        mapsStatusText.textContent = 'En Google Maps, toca "Compartir" -> "Copiar vínculo" y pégalo en el campo inferior.';
+      }
+    });
+  }
+
+  if (custMapsUrlInput) {
+    custMapsUrlInput.addEventListener('input', () => {
+      const val = custMapsUrlInput.value.trim();
+      if (val && (val.includes('maps.google') || val.includes('google.com/maps') || val.includes('maps.app.goo.gl') || val.includes('goo.gl/maps') || val.startsWith('http'))) {
+        if (btnTestMapsUrl) {
+          btnTestMapsUrl.href = val;
+          btnTestMapsUrl.classList.remove('hidden');
+        }
+        if (mapsStatusText) {
+          mapsStatusText.innerHTML = '<span class="text-emerald-700 font-semibold">✓ Enlace de Google Maps verificado</span>';
+        }
+      } else {
+        if (btnTestMapsUrl) btnTestMapsUrl.classList.add('hidden');
+        if (!val && mapsStatusText) {
+          mapsStatusText.textContent = 'Si no tienes el enlace, usaremos tu dirección escrita para generar la ruta automáticamente.';
+        }
+      }
+    });
   }
 
   function showNotification(msg, isError = true) {
@@ -990,6 +1111,7 @@ function initCartDrawer() {
       if (btnPayText) btnPayText.textContent = 'Continuar con Yape / Plin';
       if (btnPayIconYape) btnPayIconYape.classList.remove('hidden');
       if (btnPayIconCard) btnPayIconCard.classList.add('hidden');
+      if (cardNoticePill) cardNoticePill.classList.add('hidden');
     } else {
       if (yapeLabel) {
         yapeLabel.className = 'payment-method-card flex flex-col justify-between p-3 rounded-2xl border border-[#F5DCE3] bg-white cursor-pointer hover:border-[#C84B69] transition-all';
@@ -1000,6 +1122,7 @@ function initCartDrawer() {
       if (btnPayText) btnPayText.textContent = 'Pagar con Tarjeta Online';
       if (btnPayIconYape) btnPayIconYape.classList.add('hidden');
       if (btnPayIconCard) btnPayIconCard.classList.remove('hidden');
+      if (cardNoticePill) cardNoticePill.classList.remove('hidden');
     }
   }
 
@@ -1103,34 +1226,84 @@ function initCartDrawer() {
           if (paymentContainer) paymentContainer.classList.add('hidden');
           if (notifBox) notifBox.classList.add('hidden');
 
+          const finalOrder = verified.orderId || activeOrderContext?.orderId || 'NYOTA';
+          const finalAmount = verified.amount ? `${verified.currency || 'PEN'} ${verified.amount.toFixed(2)}` : `S/. ${(activeOrderContext?.total || 0).toFixed(2)}`;
+          const finalTx = verified.transactionUuid || 'Verificado';
+          const c = activeOrderContext?.customer || {};
+          const currentPricing = computeOrderPricing(c.destination);
+
+          // Asynchronously dispatch notification email to nyotapedidos@gmail.com
+          fetch('/api/send-order-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              orderId: finalOrder,
+              customer: c,
+              pricing: {
+                tier: activeOrderContext?.tier || state.tier,
+                tierName: state.names[activeOrderContext?.tier || state.tier],
+                quantity: activeOrderContext?.quantity || state.quantity,
+                subtotal: currentPricing.subtotal,
+                discountAmount: currentPricing.discountAmount,
+                shippingCost: currentPricing.shippingCost,
+                total: activeOrderContext?.total || currentPricing.total
+              },
+              transaction: {
+                transactionUuid: finalTx,
+                orderStatus: status,
+                paymentMethod: verified.paymentMethod || 'CARD',
+                currency: verified.currency || 'PEN'
+              }
+            })
+          }).then(r => r.json()).then(res => {
+            console.log('[ORDER EMAIL NOTIFICATION RESULT]', res);
+          }).catch(err => {
+            console.warn('[ORDER EMAIL SILENT ERR]', err);
+          });
+
           const rOrderId = document.getElementById('receipt-order-id');
           const rStatus = document.getElementById('receipt-status');
           const rAmount = document.getElementById('receipt-amount');
           const rTxId = document.getElementById('receipt-tx-id');
           const rWaLink = document.getElementById('receipt-whatsapp-link');
-
-          const finalOrder = verified.orderId || activeOrderContext?.orderId || 'NYOTA';
-          const finalAmount = verified.amount ? `${verified.currency || 'PEN'} ${verified.amount.toFixed(2)}` : `S/. ${(activeOrderContext?.total || 0).toFixed(2)}`;
-          const finalTx = verified.transactionUuid || 'Verificado';
+          const rDest = document.getElementById('receipt-destination');
+          const rAddr = document.getElementById('receipt-address');
+          const rMapsLink = document.getElementById('receipt-maps-link');
 
           if (rOrderId) rOrderId.textContent = finalOrder;
-          if (rStatus) rStatus.textContent = status;
+          if (rStatus) rStatus.textContent = `${status} (Aprobado)`;
           if (rAmount) rAmount.textContent = finalAmount;
           if (rTxId) rTxId.textContent = finalTx;
+          if (rDest) rDest.textContent = `${c.district || 'Lima'}, ${c.destination === 'provincias' ? 'Provincia' : 'Lima Metro'}`;
+          if (rAddr) rAddr.textContent = [c.address, c.reference].filter(Boolean).join(' - ') || 'Dirección registrada';
+          if (rMapsLink) {
+            if (c.mapsUrl) {
+              rMapsLink.href = c.mapsUrl;
+              rMapsLink.classList.remove('hidden');
+            } else {
+              rMapsLink.classList.add('hidden');
+            }
+          }
 
           if (rWaLink) {
-            const c = activeOrderContext?.customer || {};
             const waText =
-              `*PEDIDO PAGADO POR IZIPAY - NYOTA*\n` +
-              `Orden: ${finalOrder}\n` +
-              `Estado: ${status}\n` +
-              `Monto: ${finalAmount}\n` +
-              `ID Transacción: ${finalTx}\n` +
-              `Cliente: ${c.name || ''}\n` +
-              `Teléfono: ${c.phone || ''}\n` +
-              `Distrito: ${c.district || ''}\n` +
-              `Dirección: ${c.address || ''}\n` +
-              `¡Hola! Acabo de completar mi pago en línea, deseo coordinar mi entrega.`;
+              `*PEDIDO PAGADO POR TARJETA ONLINE (IZIPAY) - NYOTA*\n` +
+              `----------------------------------------\n` +
+              `*N° Pedido:* ${finalOrder}\n` +
+              `*Estado:* ${status}\n` +
+              `*Monto:* ${finalAmount}\n` +
+              `*ID Transacción:* ${finalTx}\n` +
+              `----------------------------------------\n` +
+              `*DATOS DE DESPACHO*\n` +
+              `*Cliente:* ${c.name || ''}\n` +
+              `*WhatsApp:* ${c.phone || ''}\n` +
+              `*DNI/RUC:* ${c.dni || ''}\n` +
+              `*Destino:* ${c.district || ''} (${c.destination === 'provincias' ? 'Provincia' : 'Lima Metro'})\n` +
+              `*Dirección:* ${c.address || ''} ${c.reference ? `(${c.reference})` : ''}\n` +
+              (c.mapsUrl ? `*Ubicación Google Maps:* ${c.mapsUrl}\n` : '') +
+              (c.deliveryNotes ? `*Notas de entrega:* ${c.deliveryNotes}\n` : '') +
+              `----------------------------------------\n` +
+              `¡Hola NYOTA! Acabo de pagar en línea con mi tarjeta. Confirmo mis datos de despacho prioritario.`;
             rWaLink.href = `https://wa.me/51922020069?text=${encodeURIComponent(waText)}`;
           }
 

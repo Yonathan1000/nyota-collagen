@@ -84,6 +84,10 @@ module.exports = async (req, res) => {
       },
       metadata: {
         source: 'nyota-collagen-web',
+        mapsUrl: customer?.mapsUrl ? String(customer.mapsUrl).slice(0, 255) : '',
+        reference: customer?.reference ? String(customer.reference).slice(0, 255) : '',
+        deliveryNotes: customer?.deliveryNotes ? String(customer.deliveryNotes).slice(0, 255) : '',
+        destination: customer?.destination || 'lima',
         ...(metadata && typeof metadata === 'object' ? metadata : {})
       }
     };

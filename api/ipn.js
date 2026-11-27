@@ -6,6 +6,7 @@
  */
 
 const { getIzipayConfig, parseRequestBody, verifyKrHash } = require('./_lib/izipay');
+const { dispatchOrderEmail } = require('./_lib/email-dispatcher');
 
 module.exports = async (req, res) => {
   const cfg = getIzipayConfig();
@@ -65,6 +66,41 @@ module.exports = async (req, res) => {
     console.log(
       `[IZIPAY IPN VERIFIED] mode=${cfg.mode} shopId=${cfg.shopId} orderId=${orderId} status=${orderStatus} amount=${currency} ${orderAmount} tx=${transactionUuid} method=${paymentMethod}`
     );
+
+    if (orderStatus === 'PAID') {
+      const c = answer.customer || {};
+      const meta = answer.metadata || {};
+      const billing = c.billingDetails || {};
+      const fullName = [billing.firstName, billing.lastName].filter(Boolean).join(' ') || c.name || 'Cliente';
+      
+      dispatchOrderEmail({
+        orderId,
+        customer: {
+          name: fullName,
+          phone: billing.phoneNumber || c.phone || '',
+          dni: billing.identityCode || c.dni || '',
+          email: c.email || '',
+          destination: meta.destination || 'lima',
+          district: billing.district || billing.city || 'Lima',
+          address: billing.address || '',
+          reference: meta.reference || '',
+          deliveryNotes: meta.deliveryNotes || '',
+          mapsUrl: meta.mapsUrl || ''
+        },
+        pricing: {
+          total: Number(orderAmount),
+          subtotal: Number(orderAmount),
+          discountAmount: 0,
+          shippingCost: 0
+        },
+        transaction: {
+          transactionUuid,
+          orderStatus,
+          paymentMethod,
+          currency
+        }
+      }).catch(e => console.warn('[IPN EMAIL DISPATCH SILENT ERR]', e));
+    }
 
     // Exact 200 OK acknowledgement string expected by IZIPAY IPN validator
     return res.status(200).send(`OK! OrderStatus is ${orderStatus}`);
