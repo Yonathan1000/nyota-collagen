@@ -390,7 +390,11 @@
 
   function mountSilkBackdrop() {
     const rootEl = document.getElementById('react-silk-bg-root');
-    if (!rootEl || !window.React || !window.ReactDOM) return;
+    if (!rootEl) return;
+    if (!window.React || !window.ReactDOM) {
+      setTimeout(mountSilkBackdrop, 40);
+      return;
+    }
     if (typeof window.ReactDOM.createRoot === 'function') {
       window.ReactDOM.createRoot(rootEl).render(e(NyotaSilkBackground));
     } else if (typeof window.ReactDOM.render === 'function') {

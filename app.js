@@ -1,16 +1,26 @@
 // NYOTA — Senior Creative WebGL & Scrollytelling Engine
 
-document.addEventListener('DOMContentLoaded', () => {
-  if (window.lucide) {
-    lucide.createIcons();
+function bootstrapApp() {
+  if (window.THREE && window.THREE.GLTFLoader) {
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+    initThreeJsScrollytelling();
+    initPricingSelector();
+    initCartDrawer();
+    initFaqAccordion();
+    initStickyBar();
+    initSmoothScrollLinks();
+  } else {
+    setTimeout(bootstrapApp, 30);
   }
-  initThreeJsScrollytelling();
-  initPricingSelector();
-  initCartDrawer();
-  initFaqAccordion();
-  initStickyBar();
-  initSmoothScrollLinks();
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootstrapApp);
+} else {
+  bootstrapApp();
+}
 
 function initThreeJsScrollytelling() {
   const canvas = document.getElementById('webgl-canvas');
@@ -27,7 +37,7 @@ function initThreeJsScrollytelling() {
   );
   camera.position.set(0, 0, 5.2);
 
-  const isMobile = (document.documentElement.clientWidth || window.innerWidth) < 768;
+  let isMobile = (document.documentElement.clientWidth || window.innerWidth) < 768;
 
   const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
@@ -207,7 +217,7 @@ function initThreeJsScrollytelling() {
   }
 
   let metrics = getResponsiveJarMetrics();
-  let isMobile = metrics.isNarrow;
+  isMobile = metrics.isNarrow;
   let posX_Right = metrics.posX;
   let posX_Left  = -metrics.posX;
   let targetBaseY = metrics.baseY;
